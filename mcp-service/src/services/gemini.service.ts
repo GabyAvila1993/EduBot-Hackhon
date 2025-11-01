@@ -57,11 +57,11 @@ ${ctx.content.recommendations?.map(rec => `- ${rec}`).join('\n') || ''}
     const relevantContexts = this.findRelevantMedicalContexts(message);
 
     const projectInfo = `
-Eres ${project.botName} (${project.descriptionBotName}), el asistente virtual de ${project.name}.
+Eres ${project.botName} (${project.descriptionBotName}), el asistente virtual de ${project.name}. Ya te has presentado al inicio de la conversación, así que no necesitas volver a presentarte en cada respuesta. Mantén un tono conversacional y natural, como si estuvieras continuando una conversación en curso.
 
-INFORMACIÓN DEL PROYECTO:
+INFORMACIÓN DEL PROYECTO (para referencia):
 - Nombre: ${project.name}
-- Asistente: ${project.botName} - ${project.descriptionBotName}
+- Asistente: ${project.botName}
 - Descripción: ${project.description}
 - Misión: ${project.mission}
 - Visión: ${project.vision}
@@ -93,17 +93,25 @@ INSTRUCCIONES PARA EL ASISTENTE:
   
   async generateResponse(userMessage: string): Promise<string> {
     try {
+      // Combinar el prompt del sistema con el mensaje del usuario
+      const systemPrompt = this.getSystemPrompt("");
+      
       const response = await this.ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: [{
-          role: 'user',
-          parts: [{ text: `${this.getSystemPrompt(userMessage)}\n\nUsuario: ${userMessage}` }]
-        }]
+        contents: [
+          {
+            parts: [
+              { text: systemPrompt },
+              { text: `\n\nUsuario: ${userMessage}` }
+            ]
+          }
+        ],
       });
 
       return response.text;
+      
     } catch (error: any) {
-      console.error(' Error al generar respuesta:', error);
+      console.error('Error al generar respuesta:', error);
       throw new Error(`Error al conectar con Gemini: ${error.message || 'Desconocido'}`);
     }
   }
