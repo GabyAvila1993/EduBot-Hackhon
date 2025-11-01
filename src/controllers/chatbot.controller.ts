@@ -1,38 +1,52 @@
 import { Controller, Post, Body, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { GeminiService } from '../services/gemini.service';
-import { ChatMessageDto } from '../dto/chat-message.dto';
+import { ChatMessageDto, validateChatMessage } from '../dto/chat-message.dto';
 
 @Controller('api/chatbot')
 export class ChatbotController {
     constructor(private readonly geminiService: GeminiService) { }
 
     @Post('message')
-    async sendMessage(@Body() chatMessage: ChatMessageDto) {
+    async sendMessage(@Body() body: any) {
         try {
-            if (!chatMessage.message || chatMessage.message.trim() === '') {
+            // Validar y transformar el mensaje usando el schema
+            const chatMessage = validateChatMessage(body);
+            
+            // En este punto, chatMessage.message será siempre un string,
+            // ya sea el mensaje original o la unión de los mensajes del array
+            const message = chatMessage.message.trim();
+            
+            if (message === '') {
                 throw new HttpException(
                     'El mensaje no puede estar vacío',
                     HttpStatus.BAD_REQUEST
                 );
             }
 
-            const response = await this.geminiService.generateResponse(
-                chatMessage.message
-            );
+            const response = await this.geminiService.generateResponse(message);
 
             return {
                 success: true,
                 data: {
-                    userMessage: chatMessage.message,
+                    userMessage: message,
                     botResponse: response,
                     timestamp: new Date().toISOString()
                 }
             };
         } catch (error) {
             console.error('Error en sendMessage:', error);
+            
+            // Si es un error de validación de Zod
+            if (error.issues) {
+                throw new HttpException({
+                    message: 'Error de validación',
+                    details: error.issues
+                }, HttpStatus.BAD_REQUEST);
+            }
+            
             throw new HttpException(
                 error.message || 'Error al procesar el mensaje',
-                HttpStatus.INTERNAL_SERVER_ERROR
+                error.status || HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }

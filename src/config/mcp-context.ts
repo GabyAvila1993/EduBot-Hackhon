@@ -1,4 +1,8 @@
-import {MCPContext} from '../interfaces/mcp-context.interface'
+import { MCPContext } from '../interfaces/mcp-context.interface';
+import { alcoholContext } from './mcp-context-alcohol';
+import { cardiovascularContext } from './mcp-context-cardiovascular';
+import { diabetesContext } from './mcp-context-diabetes';
+import { epocContext } from './mcp-context-epoc';
 
 export const saludMapContext: MCPContext = {
   projectInfo: {
@@ -16,7 +20,7 @@ export const saludMapContext: MCPContext = {
       "Personas con limitaciones idiomáticas"
     ]
   },
-  
+
   features: [
     {
       id: "F1",
@@ -49,7 +53,7 @@ export const saludMapContext: MCPContext = {
       priority: "high"
     }
   ],
-  
+
   userStories: [
     {
       id: "HU1",
@@ -64,10 +68,20 @@ export const saludMapContext: MCPContext = {
       sprint: 1
     }
   ],
-  
+
   technicalStack: {
     frontend: ["React Native", "Leaflet Maps", "JavaScript"],
     backend: ["Node.js", "NestJS", "TypeScript"],
     apis: ["Google Maps API", "Leaflet API", "Gemini AI"]
   }
 };
+
+// 🔹 Contextos médicos MCP adicionales
+import { MCPMedicalContext } from '../interfaces/mcp-medical-context.interface';
+
+export const medicalContexts: MCPMedicalContext[] = [
+  alcoholContext,
+  cardiovascularContext,
+  diabetesContext,
+  epocContext
+];
