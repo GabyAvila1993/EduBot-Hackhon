@@ -1,0 +1,28 @@
+/*--------------- .gitignore --------------*/
+```
+# Dependencias
+node_modules/
+package-lock.json
+
+# Compilados
+dist/
+build/
+
+# Variables de entorno
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
