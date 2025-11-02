@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { sendMessageToAura } from '../api/chatbotService';
 import './ChatBotWidget.css';
-import chatIcon from '../assets/images/chat-icon.png';
+import chatIcon from '../assets/chat-icon.png';
 
 interface ChatMessage {
   text: string;
