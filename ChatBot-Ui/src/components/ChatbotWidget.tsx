@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { sendMessageToAura } from '../api/chatbotService';
 import './ChatBotWidget.css';
+import chatIcon from '../assets/images/chat-icon.png';
 
 interface ChatMessage {
   text: string;
@@ -41,14 +42,14 @@ export const ChatbotWidget: React.FC = () => {
     <div className="chatbot-container">
       {!isOpen && (
         <div className="chatbot-avatar" onClick={() => setIsOpen(true)}>
-          <img src="src/assets/images/chat-icon.png" alt="Aura Assistant" />
+          <img src={chatIcon} alt="Aura Assistant" />
         </div>
       )}
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
             <div className="header-content">
-              <img src="src/assets/images/chat-icon.png" alt="Aura" className="header-avatar" />
+              <img src={chatIcon} alt="Aura" className="header-avatar" />
               <div className='envoltura-title'>
                 <h3 className='title'>Aura</h3>
                 <h6 className='title'>Asistente Útil de Respuesta Automatizada</h6>
