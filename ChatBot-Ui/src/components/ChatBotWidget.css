@@ -26,10 +26,7 @@
   max-width: 420px;
   height: 80vh;
   max-height: 580px;
-  background: var(--chatbot-bg-color);
   border-radius: var(--chatbot-radius);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -49,13 +46,14 @@
 }
 
 .chat-header {
-  background: var(--chatbot-primary-color);
+  background: rgba(44, 62, 80, 0.8);
   color: white;
   padding: 18px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
 }
 
 .chat-header h3 {
@@ -152,14 +150,14 @@
 }
 
 .message.user {
-  background-color: #e9e9eb;
-  color: #333;
+  background-color: rgba(73, 88, 104, 0.856);
+  color: #ffffff;
   align-self: flex-end;
 }
 
 .message.aura {
   background-color: var(--chatbot-primary-color);
-  color: white;
+  color: #ffffff;
   align-self: flex-start;
 }
 
@@ -170,23 +168,26 @@
 .chat-input-form {
   display: flex;
   padding: 14px;
-  border-top: 1px solid #ddd;
-  background-color: #fff;
+  border-top: 1px solid rgba(44, 62, 80, 0.8);
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.089);
 }
 
 .chat-input-form input {
   flex-grow: 1;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.644);
   border-radius: 24px;
   padding: 12px 18px;
   font-size: 0.95rem;
   margin-right: 12px;
+  background: rgba(29, 31, 32, 0.897);
+  color: white;
 }
 
 .chat-input-form button {
   border: none;
   background-color: var(--chatbot-primary-color);
-  color: white;
+  color: #fff;
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -198,7 +199,7 @@
 }
 
 .chat-input-form button:disabled {
-  background-color: #a0c7e4;
+  background-color: #ffffff;
   cursor: not-allowed;
 }
 

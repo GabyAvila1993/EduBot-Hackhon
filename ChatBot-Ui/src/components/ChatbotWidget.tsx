@@ -86,16 +86,6 @@ export const ChatbotWidget: React.FC = () => {
             </button>
           </form>
         </div>
-      )
-      }
-      {!isOpen && (
-        <button 
-          onClick={() => setIsOpen(true)} 
-          className="chat-toggle-button"
-          aria-label="Iniciar chat"
-        >
-          {/* <span>📨</span> */}
-        </button>
       )}
     </div >
   );
