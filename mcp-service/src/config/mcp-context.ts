@@ -4,6 +4,8 @@ import {categoriasGramaticalesContext} from './mcp-categorias-gramaticales';
 import {ortografiaContext} from './mcp-ortografia-espaniol';
 import {ecuacionesContext} from './mcp-ecuaciones';
 import {operacionesCombinadasContext} from './mcp-ejercicioscombinados';
+import {matematicaContext} from './mcp.ejercicios-matematica';
+import {lenguaContext} from './mcp.ejercicicos-lengua';
 
 
 
@@ -50,5 +52,7 @@ export const educationalContexts: MCPEducationalContext[] = [
   ortografiaContext,
   categoriasGramaticalesContext,
   ecuacionesContext,
-  operacionesCombinadasContext
+  operacionesCombinadasContext,
+  matematicaContext,
+  lenguaContext
 ];

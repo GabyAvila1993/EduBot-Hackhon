@@ -13,9 +13,21 @@ async function bootstrap() {
         credentials: true,
     });
 
-    const port = process.env.PORT || 3000;
+    // Añadir header para Private Network Access (preflight)
+    // Algunos navegadores (Chrome) requieren que el servidor responda
+    // con Access-Control-Allow-Private-Network: true cuando el cliente
+    // solicita recursos en la red local desde un contexto más público.
+    // Esto solo tiene efecto en las respuestas OPTIONS (preflight).
+    app.use((req, res, next) => {
+        if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Private-Network', 'true');
+        }
+        next();
+    });
 
+    const port = 3000;
     await app.listen(port);
+    console.log(`Servidor backend escuchando en http://localhost:${port}`);
 
 
 }

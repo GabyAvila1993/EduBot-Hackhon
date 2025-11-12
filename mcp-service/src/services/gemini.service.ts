@@ -499,6 +499,78 @@ Formato de respuesta:
   }
 
   /**
+   * Evalúa la solución del usuario y retorna un objeto JSON estructurado:
+   * { isCorrect, analysis, correction, theory, recommendations }
+   */
+  async evaluateExerciseStructured(
+    exerciseId: string,
+    answers: string[],
+    module?: string,
+    context?: string
+  ): Promise<any> {
+    try {
+      const moduleContext = this.findModuleContext(module);
+      const systemPrompt = this.buildSystemPrompt(moduleContext);
+
+      // Construir sección de preguntas/respuesas para el prompt
+      const qaLines = answers.map((a, i) => `Pregunta ${i + 1}: "${a.replace(/\"/g, '\\"')}"`).join('\n');
+
+      const prompt = `
+${systemPrompt}
+
+TAREA: Evalúa la solución de un estudiante para un ejercicio específico y responde **SOLO** con un objeto JSON válido con la siguiente estructura:
+
+{
+  "isCorrect": boolean, // si todas las respuestas del ejercicio están correctas
+  "perQuestion": [
+    { "index": number, "isCorrect": boolean, "analysis": string, "correction": string, "theory": string }
+  ],
+  "recommendations": [ /* array de strings: sugerencias o nombres de ejercicios extra */ ]
+}
+
+INSTRUCCIONES:
+1) Evalúa cada respuesta individualmente usando el contexto del módulo.
+2) Para cada ítem en perQuestion, incluye index (0-based), isCorrect, analysis (qué falló o acierto), correction (pasos o respuesta correcta) y theory (breve explicación).
+3) isCorrect al nivel del objeto indica si todas las preguntas del ejercicio están correctas.
+4) Si sugieres ejercicios extra, incluye sus identificadores o descripciones en recommendations.
+5) La salida debe ser únicamente JSON válido, sin texto adicional.
+
+EJERCICIO-ID: ${exerciseId}
+RESPUESTAS DEL ESTUDIANTE:
+${qaLines}
+
+RESPONDE AHORA EN JSON:
+`;
+
+
+      const response = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt
+      });
+
+      const raw = response.text;
+
+      // Intentar parsear JSON directamente; si falla, extraer substring entre la primera '{' y la última '}'
+      try {
+        return JSON.parse(raw);
+      } catch (err) {
+        const first = raw.indexOf('{');
+        const last = raw.lastIndexOf('}');
+        if (first !== -1 && last !== -1 && last > first) {
+          const sub = raw.substring(first, last + 1);
+          return JSON.parse(sub);
+        }
+        // Si no se pudo parsear, devolver el texto crudo en un campo
+        return { isCorrect: null, raw: raw };
+      }
+
+    } catch (error: any) {
+      console.error('Error en evaluateExerciseStructured:', error);
+      throw new Error(`Error al evaluar ejercicio: ${error.message}`);
+    }
+  }
+
+  /**
    * Genera un nuevo ejercicio basado en el módulo educativo
    */
   async generateExercise(
@@ -664,5 +736,157 @@ ofrece guiarlo hacia los módulos disponibles o generar ejercicios.
         totalExercises: (ctx as any).exercises ? (ctx as any).exercises.length : 0
       }))
     };
+  }
+
+  /**
+   * Obtiene ejercicios específicos de un módulo desde los archivos MCP
+   */
+  getExercisesByModule(module: string): any[] {
+    try {
+      const normalizedModule = module.toLowerCase();
+      let targetContext: MCPEducationalContext | undefined;
+
+      // Buscar el contexto apropiado
+      if (normalizedModule.includes('matemat') || normalizedModule === 'matematicas') {
+        targetContext = educationalContexts.find(ctx => ctx.id === 'matematica-operaciones');
+      } else if (normalizedModule.includes('lengua') || normalizedModule === 'lengua') {
+        targetContext = educationalContexts.find(ctx => ctx.id === 'lengua-espanol');
+      } else {
+        // Buscar por ID o nombre
+        targetContext = educationalContexts.find(ctx => 
+          ctx.id.toLowerCase().includes(normalizedModule) || 
+          ctx.name.toLowerCase().includes(normalizedModule)
+        );
+      }
+
+      if (!targetContext) {
+        throw new Error(`Módulo '${module}' no encontrado`);
+      }
+
+      // Extraer ejercicios del contexto
+      const exercises = (targetContext.content as any)?.exercises || [];
+      
+      // Transformar ejercicios al formato esperado por el frontend
+      return exercises.map((exercise: any, index: number) => ({
+        id: exercise.id || `${targetContext.id}-${index}`,
+        title: exercise.title || `Ejercicio ${index + 1}`,
+        instruction: exercise.instruction || '',
+        questions: exercise.questions || [],
+        difficulty: this.inferDifficulty(exercise),
+        type: this.inferType(exercise, targetContext.id),
+        contextId: targetContext.id,
+        module: targetContext.name
+      }));
+
+    } catch (error) {
+      console.error('Error en getExercisesByModule:', error);
+      throw new Error(`Error al obtener ejercicios del módulo ${module}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Infiere la dificultad de un ejercicio basado en su contenido
+   */
+  private inferDifficulty(exercise: any): 'easy' | 'medium' | 'hard' {
+    const questionCount = exercise.questions?.length || 0;
+    if (questionCount <= 3) return 'easy';
+    if (questionCount <= 7) return 'medium';
+    return 'hard';
+  }
+
+  /**
+   * Infiere el tipo de ejercicio basado en su contenido y contexto
+   */
+  private inferType(exercise: any, contextId: string): string {
+    if (contextId.includes('lengua')) {
+      if (exercise.title?.toLowerCase().includes('ortograf')) return 'grammar';
+      if (exercise.title?.toLowerCase().includes('palabra')) return 'vocabulary';
+      if (exercise.title?.toLowerCase().includes('comprens')) return 'reading';
+      return 'grammar';
+    } else if (contextId.includes('matemat')) {
+      if (exercise.title?.toLowerCase().includes('operacion')) return 'operations';
+      if (exercise.title?.toLowerCase().includes('ecuacion')) return 'equations';
+      if (exercise.title?.toLowerCase().includes('simbolic')) return 'symbolic';
+      return 'arithmetic';
+    }
+    return 'general';
+  }
+
+  /**
+   * Genera el prompt de contexto educacional
+   */
+  private getEducationalContextPrompt(relevantContexts: MCPEducationalContext[]): string {
+    let contextInfo = '';
+    if (relevantContexts.length > 0) {
+      contextInfo = relevantContexts.map(ctx => `
+=== CONTEXTO EDUCACIONAL: ${ctx.name.toUpperCase()} ===
+${ctx.content.description}
+TEMAS PRINCIPALES:
+${ctx.content.mainTopics?.map(topic => `- ${topic}`).join('\n') || ''}
+REGLAS IMPORTANTES:
+${ctx.content.rules?.map(rule => `
+• ${rule.title}:
+${rule.content.map(content => `  - ${content}`).join('\n')}
+${rule.examples ? `  Ejemplos: ${rule.examples.join(', ')}` : ''}
+`).join('\n') || ''}
+`).join('\n');
+    }
+    return contextInfo;
+  }
+
+  /**
+   * Corrige una respuesta específica usando IA y contexto educacional
+   */
+  async correctAnswerWithAI(
+    question: string, 
+    userAnswer: string, 
+    correctAnswer: string, 
+    contextId: string,
+    exerciseId?: string
+  ): Promise<string> {
+    try {
+      const context = educationalContexts.find(ctx => ctx.id === contextId);
+      if (!context) {
+        throw new Error(`Contexto educativo '${contextId}' no encontrado`);
+      }
+
+      const contextInfo = this.getEducationalContextPrompt([context]);
+      
+      const prompt = `
+Eres AURA, un tutor experto en "${context.name}". 
+
+CONTEXTO EDUCATIVO:
+${contextInfo}
+
+TAREA: Corregir la respuesta de un estudiante y proporcionar explicación educativa.
+
+PREGUNTA: ${question}
+RESPUESTA CORRECTA: ${correctAnswer}
+RESPUESTA DEL ESTUDIANTE: ${userAnswer}
+
+INSTRUCCIONES:
+1. Determina si la respuesta del estudiante es correcta o incorrecta
+2. Si es incorrecta, explica por qué está mal usando las reglas del contexto educativo
+3. Proporciona la respuesta correcta con explicación paso a paso
+4. Da consejos específicos para mejorar
+5. Sé amable y motivador
+
+FORMATO DE RESPUESTA:
+**Análisis**: [Evaluación de la respuesta]
+**Explicación**: [Por qué es correcta/incorrecta según las reglas]
+**Respuesta Correcta**: [La respuesta correcta con explicación]
+**Consejo**: [Sugerencia específica para mejorar]
+`;
+
+      const response = await this.ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt
+      });
+
+      return response.text;
+    } catch (error) {
+      console.error('Error en correctAnswerWithAI:', error);
+      throw new Error(`Error al corregir respuesta: ${error.message}`);
+    }
   }
 }

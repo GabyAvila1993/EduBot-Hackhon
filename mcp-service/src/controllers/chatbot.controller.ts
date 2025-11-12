@@ -1,12 +1,14 @@
 // src/controllers/chatbot.controller.ts
 
-import { Controller, Post, Get, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { GeminiService } from '../services/gemini.service';
 import { ChatMessageDto, ChatResponseDto } from '../dto/chat-message.dto';
 
 @Controller('assistant')
 export class ChatbotController {
-  constructor(private readonly geminiService: GeminiService) {}
+  constructor(
+    private readonly geminiService: GeminiService,
+  ) {}
 
   /**
    * Endpoint principal para interactuar con el asistente AURA
@@ -76,17 +78,43 @@ export class ChatbotController {
     @Body() body: { answer: string; module?: string; exerciseContext?: string }
   ): Promise<ChatResponseDto> {
     try {
-      const response = await this.geminiService.correctExercise(
-        body.answer,
+      // El frontend envía en body.answer un JSON string con { exercise, answers }
+      let payload: any = {};
+      try {
+        payload = typeof body.answer === 'string' ? JSON.parse(body.answer) : body.answer;
+      } catch (e) {
+        // Si no se puede parsear, tratar body.answer como texto simple
+        payload = { exercise: body.exerciseContext || '', answers: [body.answer] };
+      }
+
+      const exerciseId = payload.exercise || body.exerciseContext || '';
+      const answers: string[] = Array.isArray(payload.answers) ? payload.answers : [payload.answers || ''];
+
+      const structured = await this.geminiService.evaluateExerciseStructured(
+        exerciseId,
+        answers,
         body.module,
         body.exerciseContext
       );
 
+      // Ejercicios extras deshabilitados temporalmente
+      let extras = [];
+
       return {
-        response,
+        response: structured,
         responseType: 'correction',
         moduleUsed: body.module,
-        timestamp: new Date()
+        timestamp: new Date(),
+        exercise: {
+          question: exerciseId || '',
+          type: 'student-submission',
+        },
+        feedback: {
+          strengths: [],
+          areasToImprove: structured?.perQuestion ? structured.perQuestion.filter((p: any) => !p.isCorrect).map((p: any) => p.theory || p.analysis) : [],
+          recommendations: structured?.recommendations || []
+        },
+        extraExercises: extras
       };
     } catch (error) {
       throw new HttpException(
@@ -100,7 +128,6 @@ export class ChatbotController {
       );
     }
   }
-
   /**
    * Endpoint para solicitar ejercicios nuevos
    * POST /assistant/generate-exercise
@@ -170,6 +197,48 @@ export class ChatbotController {
   }
 
   /**
+   * Endpoint para corregir respuestas específicas con IA
+   * POST /assistant/correct-answer
+   */
+  @Post('correct-answer')
+  async correctAnswerWithAI(
+    @Body() body: { 
+      question: string; 
+      userAnswer: string; 
+      correctAnswer: string; 
+      contextId: string;
+      exerciseId?: string;
+    }
+  ): Promise<ChatResponseDto> {
+    try {
+      const response = await this.geminiService.correctAnswerWithAI(
+        body.question,
+        body.userAnswer,
+        body.correctAnswer,
+        body.contextId,
+        body.exerciseId
+      );
+
+      return {
+        response,
+        responseType: 'correction',
+        moduleUsed: body.contextId,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          response: 'Error al corregir la respuesta.',
+          responseType: 'correction',
+          error: error.message,
+          timestamp: new Date()
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  /**
    * Endpoint para obtener los módulos educativos disponibles
    * GET /assistant/modules
    */
@@ -186,6 +255,64 @@ export class ChatbotController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  /**
+   * Devuelve los ejercicios en JSON para un módulo (por id o alias)
+   * GET /assistant/exercises/:module
+   */
+  @Get('exercises/:module')
+  getExercises(@Param('module') module: string) {
+    try {
+      const exercises = this.geminiService.getExercisesByModule(module);
+      return {
+        module: module,
+        exercises: exercises,
+        success: true
+      };
+    } catch (error) {
+      throw new HttpException({ 
+        message: 'Error al obtener ejercicios', 
+        error: error.message,
+        success: false 
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Devuelve el HTML de la plantilla para el módulo solicitado (si existe o genera)
+   * GET /assistant/template/:module
+   */
+  @Get('template/:module')
+  getTemplate(@Param('module') module: string) {
+    try {
+      const moduleId = this.normalizeModuleId(module);
+      // Plantillas deshabilitadas temporalmente
+      return { module: moduleId, html: '<p>Plantilla no disponible</p>' };
+    } catch (error) {
+      throw new HttpException({ message: 'Error al obtener plantilla', error: error.message }, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  /**
+   * Escribe (despliega) las plantillas HTML en Front/template usando los MCP locales
+   * POST /assistant/deploy-templates
+   */
+  @Post('deploy-templates')
+  async deployTemplates() {
+    try {
+      // Despliegue de plantillas deshabilitado temporalmente
+      return { success: true, result: 'Despliegue deshabilitado' };
+    } catch (error) {
+      throw new HttpException({ message: 'Error al desplegar plantillas', error: error.message }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private normalizeModuleId(module: string) {
+    const m = (module || '').toLowerCase();
+    if (m.includes('lengua') || m.includes('espanol') || m.includes('lengua-espanol')) return 'lengua-espanol';
+    if (m.includes('matemat') || m.includes('matematica') || m.includes('matematica-operaciones')) return 'matematica-operaciones';
+    return module;
   }
 
   

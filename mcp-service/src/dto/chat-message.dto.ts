@@ -80,9 +80,9 @@ export class ChatMessageDto {
  */
 export class ChatResponseDto {
   /**
-   * Respuesta generada por AURA
+   * Respuesta generada por AURA (puede ser texto o un objeto estructurado)
    */
-  response: string;
+  response: any;
 
   /**
    * Tipo de respuesta
@@ -116,6 +116,11 @@ export class ChatResponseDto {
     areasToImprove: string[];
     recommendations: string[];
   };
+
+  /**
+   * Ejercicios extra sugeridos (si aplica)
+   */
+  extraExercises?: Array<any>;
 
   /**
    * Módulo utilizado
