@@ -1,0 +1,106 @@
+/* ================================================= */
+/* ESTILOS BASE Y DE ICONOS (Común a todos)          */
+/* ================================================= */
+
+/* Estilo base para los iconos de Google */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Modificador para iconos rellenos (usado en 'profesor.html' y 'refuerzo.html') */
+.material-symbols-outlined.fill,
+.icon-fill {
+    font-variation-settings: 'FILL' 1;
+}
+
+/* Estilo para el enlace de navegación activo en la barra lateral */
+.nav-link.active-link {
+    /* bg-primary/10 */
+    background-color: rgba(19, 91, 236, 0.10);
+    /* text-primary */
+    color: #135bec;
+}
+
+/* Dark mode: versión más intensa del fondo */
+.dark .nav-link.active-link {
+    background-color: rgba(19, 91, 236, 0.20);
+}
+
+/* Estilo para enlaces inactivos (copiado de 'profesor.html') */
+.nav-link {
+    /* text-slate-600 */
+    color: #475569;
+}
+
+.nav-link:hover {
+    /* hover:bg-slate-100 */
+    background-color: #f1f5f9;
+}
+
+/* Dark mode styles for inactive links */
+.dark .nav-link {
+    /* dark:text-slate-300 */
+    color: #94a3b8;
+}
+
+.dark .nav-link:hover {
+    /* dark:hover:bg-slate-800 */
+    background-color: #0f172a;
+}
+
+/* ================================================= */
+/* ESTILOS DE IMAGEN (Todos en blanco)               */
+/* ================================================= */
+
+/* Placeholder genérico para imágenes (fondo gris) */
+.avatar-img,
+.logo-img,
+.avatar-profesor,
+.avatar-nav-img,
+.avatar-profile-img,
+.avatar-img-refuerzo {
+    background-color: #e0e0e0; /* Color de placeholder */
+    border: 2px dashed #b0b0b0; /* Borde de placeholder */
+    background-image: none !important; /* Asegura que no haya imagen */
+}
+
+/* Placeholder para imágenes de tarjetas (fondo más claro) */
+.card-img-algebra,
+.card-img-biologia {
+    background-color: #f0f0f0; /* Color de placeholder */
+    border: 2px dashed #cccccc; /* Borde de placeholder */
+    background-image: none !important; /* Asegura que no haya imagen */
+    min-height: 150px; /* Asegura que tenga algo de altura */
+}
+
+
+/* ================================================= */
+/* ESTILOS DE PROGRESO (Unificados)                  */
+/* ================================================= */
+
+/* Barras de progreso de 'index.html' y 'perfil.html' */
+.progress-75 { width: 75%; }
+.progress-85 { width: 85%; }
+.progress-65 { width: 65%; }
+.progress-70 { width: 70%; }
+.progress-90 { width: 90%; }
+.progress-62-5 { width: 62.5%; }
+.progress-60 { width: 60%; }
+.progress-45 { width: 45%; }
+
+
+/* Barras de progreso de 'cursos.html' */
+.progress-40 { width: 40%; }
+.progress-72 { width: 72%; }
+.progress-95 { width: 95%; }
+.progress-30 { width: 30%; }
+.progress-55 { width: 55%; }
+.progress-100 { width: 100%; }
+
+/* Estilos de progreso de 'refuerzo.html' */
+.progress-circle-65 {
+    stroke-dasharray: 65, 100;
+}
+.progress-bar-65 {
+    width: 65%;
+}

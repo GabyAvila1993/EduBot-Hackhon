@@ -1,87 +1,54 @@
 import { MCPContext } from '../interfaces/mcp-context.interface';
-import { alcoholContext } from './mcp-context-alcohol';
-import { cardiovascularContext } from './mcp-context-cardiovascular';
-import { diabetesContext } from './mcp-context-diabetes';
-import { epocContext } from './mcp-context-epoc';
+import { MCPEducationalContext } from '../interfaces/mcp-educational-context.interface';
+import {categoriasGramaticalesContext} from './mcp-categorias-gramaticales';
+import {ortografiaContext} from './mcp-ortografia-espaniol';
+import {ecuacionesContext} from './mcp-ecuaciones';
+import {operacionesCombinadasContext} from './mcp-ejercicioscombinados';
 
-export const saludMapContext: MCPContext = {
+
+
+export const eduBotContext: MCPContext = {
   projectInfo: {
-    name: "SaludMap",
+    name: "EduBot",
     botName: "AURA",
     descriptionBotName: "Asistente Útil de Respuesta Automatizada",
-    description: "Aplicación diseñada para facilitar el acceso a información sobre puntos de referencia sanitarios y veterinarios en un mapa interactivo",
-    mission: "Facilitar el acceso a servicios sanitarios y veterinarios a turistas, residentes y dueños de mascotas mediante una aplicación móvil intuitiva y geolocalizada",
-    vision: "Convertirnos en la herramienta líder para acceder a servicios de salud y veterinarios a nivel mundial",
+    description: "Asistente educativo que ayuda a los estudiantes a aprender y practicar temas de Lengua y Matemática mediante explicaciones, ejercicios y correcciones.",
+    mission: "Fomentar el aprendizaje autónomo a través de la IA, ofreciendo apoyo escolar accesible y claro.",
+    vision: "Convertirse en el asistente educativo más completo del mundo hispano, integrando Lengua, Matemática y otras áreas del conocimiento.",
     targetAudience: [
-      "Turistas locales e internacionales",
-      "Residentes en zonas turísticas",
-      "Dueños de mascotas",
-      "Usuarios que requieren turnos médicos rápidos",
-      "Personas con limitaciones idiomáticas"
+      "Estudiantes de todos los niveles",
+      "Docentes y tutores",
+      "Usuarios autodidactas",
+      "Instituciones educativas con interés en IA educativa"
     ]
   },
 
   features: [
-    {
-      id: "F1",
-      name: "Mapa Interactivo",
-      description: "Geolocalización en tiempo real de hospitales, clínicas, farmacias y veterinarias con filtros por especialidad, horarios y seguros",
-      priority: "high"
-    },
-    {
-      id: "F2",
-      name: "Reserva de Turnos",
-      description: "Agendamiento instantáneo para consultas médicas o veterinarias con notificaciones y recordatorios",
-      priority: "high"
-    },
-    {
-      id: "F3",
-      name: "Modo Offline",
-      description: "Acceso a información guardada previamente, descarga de mapas para zonas sin internet",
-      priority: "medium"
-    },
-    {
-      id: "F4",
-      name: "Soporte Multilingüe",
-      description: "Traducción automática en 3 idiomas con posibilidad de expansión",
-      priority: "medium"
-    },
-    {
-      id: "F5",
-      name: "Integración con Seguros",
-      description: "Verificación de cobertura internacional y conexión directa con aseguradoras",
-      priority: "high"
-    }
+    { id: "F1", name: "Corrección ortográfica y gramatical", description: "Explica errores de escritura y gramática, con ejemplos y reglas.", priority: "high" },
+    { id: "F2", name: "Asistente matemático", description: "Ayuda a resolver ecuaciones paso a paso explicando el razonamiento.", priority: "high" },
+    { id: "F3", name: "Modo de práctica guiada", description: "Permite aprender con ejercicios interactivos y autoevaluaciones.", priority: "medium" },
+    { id: "F4", name: "Aprendizaje por módulos", description: "Cada tema (Lengua o Matemática) se organiza en módulos temáticos.", priority: "high" },
+    { id: "F5", name: "Soporte conversacional", description: "AURA responde en lenguaje natural adaptado al nivel del usuario.", priority: "medium" }
   ],
 
   userStories: [
-    {
-      id: "HU1",
-      title: "Visualizar ubicaciones en el mapa",
-      description: "Como usuario quiero ver las ubicaciones de centros de salud en un mapa interactivo",
-      sprint: 1
-    },
-    {
-      id: "HU2",
-      title: "Reservar turnos",
-      description: "Como usuario quiero poder reservar turnos médicos y veterinarios",
-      sprint: 1
-    }
+    { id: "HU1", title: "Aprender ortografía", description: "Como estudiante quiero aprender reglas ortográficas con ejemplos.", sprint: 1 },
+    { id: "HU2", title: "Practicar categorías gramaticales", description: "Como usuario quiero identificar sustantivos, verbos, adjetivos, etc.", sprint: 2 },
+    { id: "HU3", title: "Resolver ecuaciones", description: "Como estudiante quiero que el bot me enseñe a resolver ecuaciones paso a paso.", sprint: 3 },
+    { id: "HU4", title: "Traducir lenguaje cotidiano a algebraico", description: "Como estudiante quiero comprender cómo convertir frases en expresiones matemáticas.", sprint: 3 }
   ],
 
   technicalStack: {
-    frontend: ["React Native", "Leaflet Maps", "JavaScript"],
-    backend: ["Node.js", "NestJS", "TypeScript"],
-    apis: ["Google Maps API", "Leaflet API", "Gemini AI"]
+    frontend: ["React", "Tailwind", "TypeScript"],
+    backend: ["Node.js", "Express", "TypeScript"],
+    apis: ["Gemini AI", "OpenAI API"]
   }
 };
 
-// 🔹 Contextos médicos MCP adicionales
-import { MCPMedicalContext } from '../interfaces/mcp-medical-context.interface';
-
-export const medicalContexts: MCPMedicalContext[] = [
-  alcoholContext,
-  cardiovascularContext,
-  diabetesContext,
-  epocContext
+// 🔹 Contextos educativos combinados
+export const educationalContexts: MCPEducationalContext[] = [
+  ortografiaContext,
+  categoriasGramaticalesContext,
+  ecuacionesContext,
+  operacionesCombinadasContext
 ];

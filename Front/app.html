@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Panel de Control Unificado</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <link href="app.css" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        /* Colores primarios (de 'profesor', 'perfil', 'refuerzo') */
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+
+                        /* Colores de 'index.html' (LearnSphere) */
+                        "primary-learnsphere": "#4A90E2",
+                        "background-light-learnsphere": "#F4F6F8",
+                        "success": "#50E3C2",
+                        "warning": "#F8E71C",
+                        "danger": "#D0021B",
+                        "neutral-white": "#FFFFFF",
+                        "neutral-dark": "#111318",
+                        "neutral-gray-light": "#dbdfe6",
+                        "neutral-gray-dark": "#616f89",
+
+                        /* Colores de 'cursos.html' (EduApp) */
+                        "background-light-eduapp": "#F8F9FA",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white">
+    <div class="relative flex h-auto min-h-screen w-full flex-row">
+
+        <aside
+            class="sticky top-0 flex h-screen min-w-60 flex-col justify-between border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-background-dark">
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3 px-3">
+                    <div class="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                        <span class="material-symbols-outlined text-white text-2xl">school</span>
+                    </div>
+                    <h1 class="text-xl font-bold dark:text-white">Panel Unificado</h1>
+                </div>
+
+                <div class="flex flex-col gap-2 pt-4">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2">Profesor</p>
+                    <a id="nav-page-profesor" href="#" onclick="showPage('page-profesor')"
+                        class="nav-link flex items-center gap-3 rounded-lg px-3 py-2">
+                        <span class="material-symbols-outlined fill">dashboard</span>
+                        <p class="text-sm font-medium leading-normal">Panel Profesor</p>
+                    </a>
+
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 py-2 mt-4">Alumno</p>
+                    <a id="nav-page-dashboard-alumno" href="#" onclick="showPage('page-dashboard-alumno')"
+                        class="nav-link flex items-center gap-3 rounded-lg px-3 py-2">
+                        <span class="material-symbols-outlined">space_dashboard</span>
+                        <p class="text-sm font-medium leading-normal">Panel Alumno</p>
+                    </a>
+                    <a id="nav-page-cursos" href="#" onclick="showPage('page-cursos')"
+                        class="nav-link flex items-center gap-3 rounded-lg px-3 py-2">
+                        <span class="material-symbols-outlined">auto_stories</span>
+                        <p class="text-sm font-medium leading-normal">Mis Cursos</p>
+                    </a>
+                    <a id="nav-page-refuerzo" href="#" onclick="showPage('page-refuerzo')"
+                        class="nav-link flex items-center gap-3 rounded-lg px-3 py-2">
+                        <span class="material-symbols-outlined">model_training</span>
+                        <p class="text-sm font-medium leading-normal">Refuerzo</p>
+                    </a>
+                    <a id="nav-page-perfil" href="#" onclick="showPage('page-perfil')"
+                        class="nav-link flex items-center gap-3 rounded-lg px-3 py-2">
+                        <span class="material-symbols-outlined">person</span>
+                        <p class="text-sm font-medium leading-normal">Perfil</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1 border-t border-slate-200 pt-4 dark:border-slate-800">
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg">
+                    <span class="material-symbols-outlined">settings</span>
+                    <p class="text-sm font-medium leading-normal">Ajustes</p>
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 rounded-lg">
+                    <span class="material-symbols-outlined">logout</span>
+                    <p class="text-sm font-medium leading-normal">Cerrar Sesión</p>
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto">
+
+            <section id="page-profesor" class="page-content p-8">
+                <header class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex min-w-72 flex-col gap-1">
+                        <h1 class="text-[#111318] dark:text-white text-3xl font-bold leading-tight tracking-[-0.03em]">
+                            Bienvenido de nuevo, Profesor García</h1>
+                        <p class="text-[#616f89] dark:text-slate-400 text-base font-normal leading-normal">Aquí tienes
+                            un resumen de la actividad de tu clase hoy.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button class="relative rounded-full p-2 hover:bg-slate-200 dark:hover:bg-slate-800">
+                            <span
+                                class="material-symbols-outlined text-slate-600 dark:text-slate-300">notifications</span>
+                            <span class="absolute right-1 top-1 flex h-2.5 w-2.5 items-center justify-center">
+                                <span
+                                    class="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400 opacity-75"></span>
+                                <span class="relative inline-flex h-2 w-2 rounded-full bg-yellow-500"></span>
+                            </span>
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="avatar-profesor aspect-square h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat">
+                            </div>
+                            <div class="flex flex-col text-sm">
+                                <h2 class="font-medium text-[#111318] dark:text-white">Profesor García</h2>
+                                <p class="text-[#616f89] dark:text-slate-400">Admin</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <section class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div
+                        class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                        <p class="text-base font-medium text-[#111318] dark:text-slate-300">Estudiantes Activos</p>
+                        <p class="text-3xl font-bold tracking-tight text-[#111318] dark:text-white">34</p>
+                        <p class="text-sm font-medium text-green-600 dark:text-green-500">+2% vs mes anterior</p>
+                    </div>
+                    <div
+                        class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                        <p class="text-base font-medium text-[#111318] dark:text-slate-300">Tareas Calificadas</p>
+                        <p class="text-3xl font-bold tracking-tight text-[#111318] dark:text-white">75%</p>
+                        <p class="text-sm font-medium text-green-600 dark:text-green-500">+5% vs semana anterior</p>
+                    </div>
+                    <div
+                        class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                        <p class="text-base font-medium text-[#111318] dark:text-slate-300">Próxima Entrega</p>
+                        <p class="text-3xl font-bold tracking-tight text-[#111318] dark:text-white">2 días</p>
+                        <p class="text-sm font-medium text-yellow-600 dark:text-yellow-500">Ensayo de Historia</p>
+                    </div>
+                </section>
+                <section class="mt-8">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <h2 class="text-2xl font-bold leading-tight tracking-[-0.015em] text-[#111318] dark:text-white">
+                            Atajos Rápidos</h2>
+                        <div class="flex flex-1 gap-3 flex-wrap justify-start sm:justify-end">
+                            <button
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-[#f0f2f4] text-[#111318] hover:bg-slate-200 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 text-sm font-bold leading-normal tracking-[0.015em]">
+                                <span class="material-symbols-outlined text-base">campaign</span>
+                                <span class="truncate">Enviar Notificación</span>
+                            </button>
+                            <button
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white hover:bg-primary/90 text-sm font-bold leading-normal tracking-[0.015em]">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                <span class="truncate">Crear Tarea</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                <section class="mt-8">
+                    <div
+                        class="rounded-xl border border-slate-200 bg-white p-2 dark:border-slate-800 dark:bg-slate-900">
+                        <div class="p-4">
+                            <h3 class="text-lg font-bold text-[#111318] dark:text-white">Tareas Recientes</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Revisa el estado de las últimas tareas
+                                asignadas.</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead
+                                    class="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                                    <tr>
+                                        <th class="px-6 py-3" scope="col">Nombre Tarea</th>
+                                        <th class="px-6 py-3" scope="col">Clase</th>
+                                        <th class="px-6 py-3" scope="col">Fecha de Entrega</th>
+                                        <th class="px-6 py-3" scope="col">Entregas</th>
+                                        <th class="px-6 py-3" scope="col">Estado</th>
+                                        <th class="px-6 py-3" scope="col"><span class="sr-only">Acciones</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        class="border-b border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800/50">
+                                        <th class="whitespace-nowrap px-6 py-4 font-medium text-[#111318] dark:text-white"
+                                            scope="row">Ensayo de Historia Universal</th>
+                                        <td class="px-6 py-4">Historia 8A</td>
+                                        <td class="px-6 py-4">Oct 28, 2024</td>
+                                        <td class="px-6 py-4">15 / 22</td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pendiente</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a class="font-medium text-primary hover:underline" href="#">Ver
+                                                detalles</a>
+                                        </td>
+                                    </tr>
+                                    <tr
+                                        class="border-b border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800/50">
+                                        <th class="whitespace-nowrap px-6 py-4 font-medium text-[#111318] dark:text-white"
+                                            scope="row">Problemas de Álgebra</th>
+                                        <td class="px-6 py-4">Matemáticas 8A</td>
+                                        <td class="px-6 py-4">Oct 24, 2024</td>
+                                        <td class="px-6 py-4">22 / 22</td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">Calificado</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a class="font-medium text-primary hover:underline" href="#">Ver
+                                                detalles</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800/50">
+                                        <th class="whitespace-nowrap px-6 py-4 font-medium text-[#111318] dark:text-white"
+                                            scope="row">Análisis de "Don Quijote"</th>
+                                        <td class="px-6 py-4">Literatura 8A</td>
+                                        <td class="px-6 py-4">Oct 21, 2024</td>
+                                        <td class="px-6 py-4">21 / 22</td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">Atrasada</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a class="font-medium text-primary hover:underline" href="#">Ver
+                                                detalles</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section id="page-dashboard-alumno" class="page-content hidden">
+                <div class="flex flex-1 justify-center py-5">
+                    <div class="layout-content-container flex flex-col w-full max-w-6xl px-4">
+                        <header
+                            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 px-6 py-4 bg-neutral-white dark:bg-background-dark rounded-xl shadow-sm">
+                            <div class="flex items-center gap-4 text-neutral-dark dark:text-neutral-white">
+                                <div class="text-primary-learnsphere size-7">
+                                    <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+                                            fill="currentColor" fill-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">LearnSphere</h2>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button
+                                    class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-background-light-learnsphere dark:bg-background-dark text-neutral-dark dark:text-neutral-white hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30">
+                                    <span class="material-symbols-outlined">notifications</span>
+                                </button>
+                                <div class="avatar-img bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                    data-alt="Avatar de Alex">
+                                </div>
+                            </div>
+                        </header>
+
+                        <div class="flex flex-col gap-8 mt-8">
+                            <div class="flex flex-wrap justify-between gap-3 px-2">
+                                <div class="flex flex-col gap-2">
+                                    <h1
+                                        class="text-neutral-dark dark:text-neutral-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                                        ¡Hola, Alex!</h1>
+                                    <p
+                                        class="text-neutral-gray-dark dark:text-neutral-gray-light text-base font-normal leading-normal">
+                                        ¡Sigue así, vas por buen camino! Aquí tienes un resumen de tu día.</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div
+                                    class="flex flex-col gap-2 rounded-xl p-6 bg-neutral-white dark:bg-neutral-dark/30 border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                    <p
+                                        class="text-base font-medium leading-normal text-neutral-dark dark:text-neutral-white">
+                                        Puntos Totales</p>
+                                    <p class="text-primary-learnsphere tracking-light text-3xl font-bold leading-tight">
+                                        1,250</p>
+                                </div>
+                                <div
+                                    class="flex flex-col gap-2 rounded-xl p-6 bg-neutral-white dark:bg-neutral-dark/30 border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                    <p
+                                        class="text-base font-medium leading-normal text-neutral-dark dark:text-neutral-white">
+                                        Insignias Ganadas</p>
+                                    <p class="text-primary-learnsphere tracking-light text-3xl font-bold leading-tight">
+                                        8</p>
+                                </div>
+                                <div
+                                    class="flex flex-col gap-2 rounded-xl p-6 bg-neutral-white dark:bg-neutral-dark/30 border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                    <p
+                                        class="text-base font-medium leading-normal text-neutral-dark dark:text-neutral-white">
+                                        Próxima Recompensa</p>
+                                    <p class="text-primary-learnsphere tracking-light text-3xl font-bold leading-tight">
+                                        Nivel Experto
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div class="lg:col-span-2 flex flex-col gap-8">
+                                    <div
+                                        class="bg-neutral-white dark:bg-neutral-dark/30 p-6 rounded-xl border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                        <h2
+                                            class="text-neutral-dark dark:text-neutral-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
+                                            Progreso General</h2>
+                                        <div class="flex flex-col gap-3">
+                                            <div class="flex gap-6 justify-between items-center">
+                                                <p
+                                                    class="text-neutral-dark dark:text-neutral-white text-base font-medium leading-normal">
+                                                    Progreso del año escolar completado</p>
+                                                <p class="text-primary-learnsphere text-lg font-bold leading-normal">75%
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="w-full rounded-full bg-background-light-learnsphere dark:bg-background-dark h-3">
+                                                <div class="progress-75 h-3 rounded-full bg-success"></div>
+                                            </div>
+                                            <p
+                                                class="text-neutral-gray-dark dark:text-neutral-gray-light text-sm font-normal leading-normal">
+                                                ¡Solo un 25% más para terminar!</p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="bg-neutral-white dark:bg-neutral-dark/30 p-6 rounded-xl border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                        <h2
+                                            class="text-neutral-dark dark:text-neutral-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
+                                            Mis Materias</h2>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div
+                                                class="flex items-center gap-4 rounded-lg p-4 bg-background-light-learnsphere dark:bg-background-dark hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30 cursor-pointer">
+                                                <div
+                                                    class="flex items-center justify-center size-12 rounded-lg bg-primary-learnsphere/20 text-primary-learnsphere">
+                                                    <span class="material-symbols-outlined">calculate</span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Matemáticas</p>
+                                                    <div class="w-full rounded-full bg-neutral-gray-light h-1.5 mt-1">
+                                                        <div
+                                                            class="progress-85 h-1.5 rounded-full bg-primary-learnsphere">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-4 rounded-lg p-4 bg-background-light-learnsphere dark:bg-background-dark hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30 cursor-pointer">
+                                                <div
+                                                    class="flex items-center justify-center size-12 rounded-lg bg-success/20 text-success">
+                                                    <span class="material-symbols-outlined">science</span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Ciencias</p>
+                                                    <div class="w-full rounded-full bg-neutral-gray-light h-1.5 mt-1">
+                                                        <div class="progress-65 h-1.5 rounded-full bg-success">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-4 rounded-lg p-4 bg-background-light-learnsphere dark:bg-background-dark hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30 cursor-pointer">
+                                                <div
+                                                    class="flex items-center justify-center size-12 rounded-lg bg-warning/30 text-yellow-500">
+                                                    <span class="material-symbols-outlined">history_edu</span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Historia</p>
+                                                    <div class="w-full rounded-full bg-neutral-gray-light h-1.5 mt-1">
+                                                        <div class="progress-70 h-1.5 rounded-full bg-yellow-500">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="flex items-center gap-4 rounded-lg p-4 bg-background-light-learnsphere dark:bg-background-dark hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30 cursor-pointer">
+                                                <div
+                                                    class="flex items-center justify-center size-12 rounded-lg bg-danger/20 text-danger">
+                                                    <span class="material-symbols-outlined">translate</span>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Lengua</p>
+                                                    <div class="w-full rounded-full bg-neutral-gray-light h-1.5 mt-1">
+                                                        <div class="progress-90 h-1.5 rounded-full bg-danger"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-1 flex flex-col gap-8">
+                                    <div
+                                        class="bg-neutral-white dark:bg-neutral-dark/30 p-6 rounded-xl border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                        <h2
+                                            class="text-neutral-dark dark:text-neutral-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
+                                            Próximas Tareas</h2>
+                                        <div class="flex flex-col gap-4">
+                                            <div
+                                                class="flex justify-between items-center p-3 rounded-lg bg-background-light-learnsphere dark:bg-background-dark">
+                                                <div>
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Ensayo de Historia</p>
+                                                    <p
+                                                        class="text-sm text-neutral-gray-dark dark:text-neutral-gray-light">
+                                                        Vence en 2 días</p>
+                                                </div>
+                                                <span class="text-danger material-symbols-outlined">priority_high</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center p-3 rounded-lg bg-background-light-learnsphere dark:bg-background-dark">
+                                                <div>
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Problemas de Álgebra</p>
+                                                    <p
+                                                        class="text-sm text-neutral-gray-dark dark:text-neutral-gray-light">
+                                                        Vence en 5 días</p>
+                                                </div>
+                                                <span class="text-yellow-500 material-symbols-outlined">pending</span>
+                                            </div>
+                                            <div
+                                                class="flex justify-between items-center p-3 rounded-lg bg-background-light-learnsphere dark:bg-background-dark">
+                                                <div>
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Experimento de Química</p>
+                                                    <p
+                                                        class="text-sm text-neutral-gray-dark dark:text-neutral-gray-light">
+                                                        Vence en 1 semana</p>
+                                                </div>
+                                                <span
+                                                    class="text-primary-learnsphere material-symbols-outlined">hourglass_empty</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="bg-neutral-white dark:bg-neutral-dark/30 p-6 rounded-xl border border-neutral-gray-light/50 dark:border-neutral-gray-dark/30 shadow-sm">
+                                        <h2
+                                            class="text-neutral-dark dark:text-neutral-white text-[22px] font-bold leading-tight tracking-[-0.015em] mb-4">
+                                            Retroalimentación Reciente</h2>
+                                        <div class="flex flex-col gap-4">
+                                            <div
+                                                class="p-3 rounded-lg bg-background-light-learnsphere dark:bg-background-dark">
+                                                <div class="flex justify-between items-start">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Matemáticas</p>
+                                                    <a class="text-sm text-primary-learnsphere font-medium hover:underline"
+                                                        href="#">Ver
+                                                        más</a>
+                                                </div>
+                                                <p
+                                                    class="text-sm text-neutral-gray-dark dark:text-neutral-gray-light mt-1">
+                                                    "¡Excelente trabajo en la última prueba! Sigue practicando las
+                                                    ecuaciones..."</p>
+                                            </div>
+                                            <div
+                                                class="p-3 rounded-lg bg-background-light-learnsphere dark:bg-background-dark">
+                                                <div class="flex justify-between items-start">
+                                                    <p class="font-semibold text-neutral-dark dark:text-neutral-white">
+                                                        Lengua</p>
+                                                    <a class="text-sm text-primary-learnsphere font-medium hover:underline"
+                                                        href="#">Ver
+                                                        más</a>
+                                                </div>
+                                                <p
+                                                    class="text-sm text-neutral-gray-dark dark:text-neutral-gray-light mt-1">
+                                                    "Tu análisis del personaje principal fue muy profundo. Buen uso de
+                                                    las
+                                                    citas."</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-cursos" class="page-content hidden p-8">
+                <div class="w-full max-w-6xl mx-auto">
+                    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                        <div class="flex min-w-72 flex-col gap-1">
+                            <p class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">
+                                Explora tus Materias</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Primaria
+                            </p>
+                        </div>
+                        <div class="w-full md:w-auto md:max-w-xs">
+                            <label class="flex flex-col min-w-40 h-12 w-full">
+                                <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                                    <div
+                                        class="text-gray-500 dark:text-gray-400 flex border-none bg-white dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                        <span class="material-symbols-outlined">search</span>
+                                    </div>
+                                    <input
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-white dark:bg-gray-800 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 pl-2 text-base font-normal leading-normal"
+                                        placeholder="Buscar materias o temas..." value="" />
+                                </div>
+                            </label>
+                        </div>
+                    </header>
+                    <div class="flex gap-3 py-3 overflow-x-auto mb-6">
+                        <button
+                            class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary text-white px-4">
+                            <p class="text-sm font-medium leading-normal">Todas</p>
+                        </button>
+                        <button
+                            class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 px-4">
+                            <p class="text-sm font-medium leading-normal">Ciencias</p>
+                        </button>
+                        <button
+                            class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 px-4">
+                            <p class="text-sm font-medium leading-normal">Humanidades</p>
+                        </button>
+                        <button
+                            class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 px-4">
+                            <p class="text-sm font-medium leading-normal">Artes</p>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                                <span class="material-symbols-outlined text-primary text-3xl">calculate</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Matemáticas</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-primary">60%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-60 bg-primary h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
+                                <span class="material-symbols-outlined text-green-500 text-3xl">science</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ciencias Naturales</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-green-500">85%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-85 bg-green-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500/10">
+                                <span class="material-symbols-outlined text-purple-500 text-3xl">account_balance</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Historia Universal</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-purple-500">40%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-40 bg-purple-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/10">
+                                <span class="material-symbols-outlined text-red-500 text-3xl">menu_book</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Lengua y Literatura
+                                </h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-red-500">72%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-72 bg-red-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500/10">
+                                <span class="material-symbols-outlined text-orange-500 text-3xl">palette</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Arte y Cultura</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-orange-500">95%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-95 bg-orange-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-500/10">
+                                <span class="material-symbols-outlined text-teal-500 text-3xl">public</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Geografía</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-teal-500">30%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-30 bg-teal-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-500/10">
+                                <span class="material-symbols-outlined text-yellow-500 text-3xl">music_note</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Música</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-yellow-500">55%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-55 bg-yellow-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="flex flex-col bg-white dark:bg-gray-800 rounded-xl p-5 gap-4 transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-pink-500/10">
+                                <span class="material-symbols-outlined text-pink-500 text-3xl">sports_soccer</span>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Educación Física</h3>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between items-center">
+                                        <span
+                                            class="text-xs font-medium text-gray-500 dark:text-gray-400">Progreso</span>
+                                        <span class="text-xs font-medium text-pink-500">100%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                        <div class="progress-100 bg-pink-500 h-1.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-refuerzo" class="page-content hidden p-8">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div class="xl:col-span-2 flex flex-col gap-6">
+                        <div class="flex flex-wrap justify-between gap-3">
+                            <div class="flex flex-col gap-2">
+                                <p
+                                    class="text-[#111318] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                                    Mi Centro de Refuerzo</p>
+                                <p class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">Revisa
+                                    tus
+                                    errores, repasa y sigue mejorando.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex border-b border-gray-200 dark:border-gray-700 gap-8">
+                                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-primary pb-[13px] pt-4"
+                                    href="#">
+                                    <p class="text-primary text-sm font-bold leading-normal tracking-[0.015em]">Errores
+                                        Recientes</p>
+                                </a>
+                                <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#616f89] dark:text-gray-400 pb-[13px] pt-4 hover:text-[#111318] dark:hover:text-white"
+                                    href="#">
+                                    <p class="text-sm font-bold leading-normal tracking-[0.015em]">Material de Estudio
+                                    </p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="w-full @container">
+                                <div
+                                    class="flex flex-col items-stretch justify-start rounded-lg @xl:flex-row @xl:items-start shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
+                                    <div class="card-img-algebra w-full @xl:w-2/5 @xl:max-w-xs bg-center bg-no-repeat aspect-video @xl:aspect-auto @xl:h-full bg-cover rounded-t-lg @xl:rounded-l-lg @xl:rounded-r-none"
+                                        data-alt="Abstract image representing algebra"></div>
+                                    <div class="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
+                                        <p class="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
+                                            Error en
+                                            Álgebra</p>
+                                        <p
+                                            class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                            ¿Cuál es el valor de x en 2x + 3 = 11?</p>
+                                        <div
+                                            class="flex flex-col @[400px]:flex-row items-start @[400px]:items-end gap-3 justify-between mt-2">
+                                            <div class="flex flex-col gap-1">
+                                                <p
+                                                    class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
+                                                    <span class="text-red-500">Tu respuesta: x = 5.</span> Respuesta
+                                                    correcta: x
+                                                    = 4.
+                                                </p>
+                                                <p
+                                                    class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
+                                                    Error de tipo: Cálculo.</p>
+                                            </div>
+                                            <button
+                                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full @[400px]:w-auto">
+                                                <span class="truncate">Ver lección de repaso</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full @container">
+                                <div
+                                    class="flex flex-col items-stretch justify-start rounded-lg @xl:flex-row @xl:items-start shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
+                                    <div class="card-img-biologia w-full @xl:w-2/5 @xl:max-w-xs bg-center bg-no-repeat aspect-video @xl:aspect-auto @xl:h-full bg-cover rounded-t-lg @xl:rounded-l-lg @xl:rounded-r-none"
+                                        data-alt="Abstract image representing biology"></div>
+                                    <div class="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
+                                        <p class="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
+                                            Error en
+                                            Biología</p>
+                                        <p
+                                            class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                            ¿Qué parte de la célula produce energía?</p>
+                                        <div
+                                            class="flex flex-col @[400px]:flex-row items-start @[400px]:items-end gap-3 justify-between mt-2">
+                                            <div class="flex flex-col gap-1">
+                                                <p
+                                                    class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
+                                                    <span class="text-red-500">Tu respuesta: Núcleo.</span> Respuesta
+                                                    correcta:
+                                                    Mitocondria.
+                                                </p>
+                                                <p
+                                                    class="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
+                                                    Error de tipo: Conceptual.</p>
+                                            </div>
+                                            <button
+                                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full @[400px]:w-auto">
+                                                <span class="truncate">Practicar este tema</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="xl:col-span-1 flex flex-col gap-6 sticky top-8 h-fit">
+                        <div
+                            class="bg-white dark:bg-background-dark/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                            <h3 class="text-lg font-bold text-[#111318] dark:text-white">Mi Progreso General</h3>
+                            <p class="text-sm text-[#616f89] dark:text-gray-400 mb-6">¡Sigue así, estás haciendo un gran
+                                trabajo!</p>
+                            <div class="relative w-40 h-40 mx-auto mb-4">
+                                <svg class="w-full h-full" viewbox="0 0 36 36">
+                                    <path class="text-gray-200 dark:text-gray-700" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor"
+                                        stroke-width="3">
+                                    </path>
+                                    <path class="text-primary progress-circle-65" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor"
+                                        stroke-linecap="round" stroke-width="3"></path>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-3xl font-bold text-[#111318] dark:text-white">65%</span>
+                                    <span class="text-sm text-[#616f89] dark:text-gray-400">Reforzado</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                <div class="progress-bar-65 bg-primary h-2.5 rounded-full"></div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-background-dark/50 p-6 rounded-xl border border-gray-200 dark:border-gray-800">
+                            <h3 class="text-lg font-bold text-[#111318] dark:text-white">Sugerencias para ti</h3>
+                            <p class="text-sm text-[#616f89] dark:text-gray-400 mb-6">Estos son tus próximos pasos para
+                                seguir
+                                mejorando.</p>
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-start gap-4 p-4 rounded-lg bg-primary/10 dark:bg-primary/20">
+                                    <div
+                                        class="flex-shrink-0 size-8 bg-primary rounded-full text-white flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-base">play_lesson</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <p class="font-semibold text-primary">Lección: Ecuaciones de primer grado</p>
+                                        <p class="text-sm text-[#616f89] dark:text-gray-300">Un video corto para
+                                            recordar
+                                            los
+                                            pasos clave.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 p-4 rounded-lg bg-gray-100 dark:bg-white/10">
+                                    <div
+                                        class="flex-shrink-0 size-8 bg-gray-600 rounded-full text-white flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-base">quiz</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <p class="font-semibold text-[#111318] dark:text-white">Práctica: La célula y
+                                            sus
+                                            partes</p>
+                                        <p class="text-sm text-[#616f89] dark:text-gray-400">5 ejercicios rápidos para
+                                            afianzar
+                                            el conocimiento.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <section id="page-perfil" class="page-content hidden">
+                <div class="flex flex-1 justify-center p-4 sm:p-6 lg:p-10">
+                    <div class="layout-content-container flex flex-col w-full max-w-5xl gap-6">
+                        <div class="flex p-4 @container bg-white dark:bg-[#182131] rounded-xl shadow-sm">
+                            <div
+                                class="flex w-full flex-col gap-4 @[520px]:flex-row @[520px]:justify-between @[520px]:items-center">
+                                <div class="flex gap-4 items-center">
+                                    <div class="avatar-profile-img bg-center bg-no-repeat aspect-square bg-cover rounded-full h-24 w-24 sm:h-32 sm:w-32 flex-shrink-0"
+                                        data-alt="Avatar de Alex Pérez"></div>
+                                    <div class="flex flex-col justify-center">
+                                        <p
+                                            class="text-slate-800 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">
+                                            Alex Pérez</p>
+                                        <p
+                                            class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">
+                                            Nivel 5: Explorador Curioso</p>
+                                    </div>
+                                </div>
+                                <button
+                                    class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-white text-sm font-bold leading-normal tracking-[0.015em] w-full max-w-[480px] @[480px]:w-auto hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                                    <span class="truncate">Editar Perfil</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-2 flex flex-col gap-6">
+                                <div class="flex flex-wrap gap-4">
+                                    <div
+                                        class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-700 p-4 items-start bg-white dark:bg-[#182131] shadow-sm">
+                                        <p
+                                            class="text-slate-800 dark:text-white tracking-light text-2xl font-bold leading-tight">
+                                            12,500</p>
+                                        <div class="flex items-center gap-2">
+                                            <p
+                                                class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">
+                                                Puntos Totales</p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-700 p-4 items-start bg-white dark:bg-[#182131] shadow-sm">
+                                        <p
+                                            class="text-slate-800 dark:text-white tracking-light text-2xl font-bold leading-tight">
+                                            42</p>
+                                        <div class="flex items-center gap-2">
+                                            <p
+                                                class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">
+                                                Logros Desbloqueados</p>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex min-w-[111px] flex-1 basis-[fit-content] flex-col gap-2 rounded-xl border border-slate-200 dark:border-slate-700 p-4 items-start bg-white dark:bg-[#182131] shadow-sm">
+                                        <p
+                                            class="text-slate-800 dark:text-white tracking-light text-2xl font-bold leading-tight">
+                                            15 días</p>
+                                        <div class="flex items-center gap-2">
+                                            <p
+                                                class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">
+                                                Racha Activa</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-3 p-4 bg-white dark:bg-[#182131] rounded-xl shadow-sm">
+                                    <div class="flex gap-6 justify-between items-center">
+                                        <p class="text-slate-800 dark:text-white text-base font-medium leading-normal">
+                                            Progreso al Nivel 6</p>
+                                        <p
+                                            class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">
+                                            12,500 / 20,000 Puntos</p>
+                                    </div>
+                                    <div class="rounded-full bg-slate-200 dark:bg-slate-700">
+                                        <div class="h-2 rounded-full bg-primary progress-62-5"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-[#135bec] text-white rounded-xl shadow-sm p-6 flex flex-col items-start justify-between">
+                                <div class="flex flex-col gap-2">
+                                    <h3 class="text-xl font-bold">Próximo Desafío</h3>
+                                    <p class="text-white/80 text-sm">¡Las fracciones te esperan! Demuestra tus
+                                        habilidades y
+                                        gana 500 puntos.</p>
+                                </div>
+                                <button
+                                    class="w-full mt-4 flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-white text-primary text-sm font-bold leading-normal tracking-[0.015em] hover:bg-white/90 transition-colors">
+                                    <span class="truncate">Continuar Aprendiendo</span>
+                                </button>
+                            </div>
+                        </div>
+                        <h2
+                            class="text-slate-800 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-0 pt-5">
+                            Insignias y Logros</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            <div
+                                class="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <span class="material-symbols-outlined text-5xl text-yellow-500">star</span>
+                                <p class="text-sm font-medium text-slate-800 dark:text-white">Maestro de las Fracciones
+                                </p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">15 Oct 2023</p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <span class="material-symbols-outlined text-5xl text-purple-500">science</span>
+                                <p class="text-sm font-medium text-slate-800 dark:text-white">Científico Veloz</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">12 Oct 2023</p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <span class="material-symbols-outlined text-5xl text-orange-500">auto_stories</span>
+                                <p class="text-sm font-medium text-slate-800 dark:text-white">Lector Voraz</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">10 Oct 2023</p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <span class="material-symbols-outlined text-5xl text-green-500">public</span>
+                                <p class="text-sm font-medium text-slate-800 dark:text-white">Explorador Mundial</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">5 Oct 2023</p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center text-center gap-2 p-4 rounded-xl bg-white dark:bg-[#182131] shadow-sm opacity-50">
+                                <span
+                                    class="material-symbols-outlined text-5xl text-slate-400 dark:text-slate-600">history_edu</span>
+                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Viajero del Tiempo</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500">Bloqueado</p>
+                            </div>
+                        </div>
+                        <h2
+                            class="text-slate-800 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-0 pt-5">
+                            Resumen de Trayectoria</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-4 p-5 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="flex items-center justify-center size-12 rounded-lg bg-yellow-500/10 dark:bg-yellow-500/20">
+                                        <span
+                                            class="material-symbols-outlined text-2xl text-yellow-500">calculate</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-white">Matemáticas</p>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">75% completado</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-full bg-slate-200 dark:bg-slate-700">
+                                    <div class="progress-75 h-2 rounded-full bg-yellow-500"></div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4 p-5 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="flex items-center justify-center size-12 rounded-lg bg-purple-500/10 dark:bg-purple-500/20">
+                                        <span class="material-symbols-outlined text-2xl text-purple-500">science</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-white">Ciencias</p>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">60% completado</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-full bg-slate-200 dark:bg-slate-700">
+                                    <div class="progress-60 h-2 rounded-full bg-purple-500"></div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4 p-5 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="flex items-center justify-center size-12 rounded-lg bg-orange-500/10 dark:bg-orange-500/20">
+                                        <span class="material-symbols-outlined text-2xl text-orange-500">history</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-white">Historia</p>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">45% completado</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-full bg-slate-200 dark:bg-slate-700">
+                                    <div class_id="progress-45" class="h-2 rounded-full bg-orange-500"></div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4 p-5 rounded-xl bg-white dark:bg-[#182131] shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="flex items-center justify-center size-12 rounded-lg bg-green-500/10 dark:bg-green-500/20">
+                                        <span class="material-symbols-outlined text-2xl text-green-500">translate</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-white">Lenguaje</p>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">85% completado</p>
+                                    </div>
+                                </div>
+                                <div class="rounded-full bg-slate-200 dark:bg-slate-700">
+                                    <div class="progress-85 h-2 rounded-full bg-green-500"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Función para mostrar la página seleccionada y ocultar las demás
+        function showPage(pageId) {
+            // Ocultar todas las secciones de contenido
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            // Quitar la clase activa de todos los enlaces de navegación
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active-link');
+            });
+
+            // Mostrar la página solicitada
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.remove('hidden');
+            }
+
+            // Marcar el enlace de navegación como activo
+            const activeLink = document.getElementById('nav-' + pageId);
+            if (activeLink) {
+                activeLink.classList.add('active-link');
+            }
+        }
+
+        // Mostrar la primera página (Panel Profesor) por defecto al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('page-profesor');
+        });
+    </script>
+</body>
+
+</html>

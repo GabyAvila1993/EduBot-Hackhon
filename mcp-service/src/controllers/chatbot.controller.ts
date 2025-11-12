@@ -1,107 +1,204 @@
-import { Controller, Post, Body, Get, HttpException, HttpStatus } from '@nestjs/common';
+// src/controllers/chatbot.controller.ts
+
+import { Controller, Post, Get, Body, HttpException, HttpStatus } from '@nestjs/common';
 import { GeminiService } from '../services/gemini.service';
-import { ChatMessageDto, validateChatMessage } from '../dto/chat-message.dto';
+import { ChatMessageDto, ChatResponseDto } from '../dto/chat-message.dto';
 
-@Controller('api/chatbot')
+@Controller('assistant')
 export class ChatbotController {
-    constructor(private readonly geminiService: GeminiService) { }
+  constructor(private readonly geminiService: GeminiService) {}
 
-    @Post('message')
-    async sendMessage(@Body() body: any) {
-        try {
-            // Validar y transformar el mensaje usando el schema
-            const chatMessage = validateChatMessage(body);
-            
-            // En este punto, chatMessage.message será siempre un string,
-            // ya sea el mensaje original o la unión de los mensajes del array
-            const message = chatMessage.message.trim();
-            
-            if (message === '') {
-                throw new HttpException(
-                    'El mensaje no puede estar vacío',
-                    HttpStatus.BAD_REQUEST
-                );
-            }
+  /**
+   * Endpoint principal para interactuar con el asistente AURA
+   * POST /assistant/interact
+   */
+  @Post('interact')
+  async interact(@Body() chatMessage: ChatMessageDto): Promise<ChatResponseDto> {
+    try {
+      const { message, interactionType, module, difficulty, context, conversationHistory } = chatMessage;
 
-            const response = await this.geminiService.generateResponse(message);
+      let response: string;
+      let responseType: ChatResponseDto['responseType'];
 
-            return {
-                success: true,
-                data: {
-                    userMessage: message,
-                    botResponse: response,
-                    timestamp: new Date().toISOString()
-                }
-            };
-        } catch (error) {
-            console.error('Error en sendMessage:', error);
-            
-            // Si es un error de validación de Zod
-            if (error.issues) {
-                throw new HttpException({
-                    message: 'Error de validación',
-                    details: error.issues
-                }, HttpStatus.BAD_REQUEST);
-            }
-            
-            throw new HttpException(
-                error.message || 'Error al procesar el mensaje',
-                error.status || HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+      switch (interactionType) {
+        case 'correction':
+          response = await this.geminiService.correctExercise(message, module, context);
+          responseType = 'correction';
+          break;
+
+        case 'exercise_request':
+          response = await this.geminiService.generateExercise(
+            module || 'ortografia', 
+            difficulty || 'basico',
+            context
+          );
+          responseType = 'exercise';
+          break;
+
+        case 'explanation':
+          response = await this.geminiService.explainTopic(message, module);
+          responseType = 'explanation';
+          break;
+
+        case 'conversation':
+        default:
+          response = await this.geminiService.handleConversation(message, conversationHistory);
+          responseType = 'feedback';
+          break;
+      }
+
+      return {
+        response,
+        responseType,
+        moduleUsed: module,
+        timestamp: new Date()
+      };
+
+    } catch (error) {
+      throw new HttpException(
+        {
+          response: 'Lo siento, ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.',
+          responseType: 'feedback',
+          error: error.message,
+          timestamp: new Date()
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
+  }
 
-    @Post('feature')
-    async getFeatureInfo(@Body() body: { featureId: string }) {
-        try {
-            const response = await this.geminiService.getFeatureInfo(body.featureId);
+  /**
+   * Endpoint para corregir ejercicios específicamente
+   * POST /assistant/correct
+   */
+  @Post('correct')
+  async correctExercise(
+    @Body() body: { answer: string; module?: string; exerciseContext?: string }
+  ): Promise<ChatResponseDto> {
+    try {
+      const response = await this.geminiService.correctExercise(
+        body.answer,
+        body.module,
+        body.exerciseContext
+      );
 
-            return {
-                success: true,
-                data: {
-                    featureId: body.featureId,
-                    response: response,
-                    timestamp: new Date().toISOString()
-                }
-            };
-        } catch (error) {
-            throw new HttpException(
-                'Error al obtener información de la funcionalidad',
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+      return {
+        response,
+        responseType: 'correction',
+        moduleUsed: body.module,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          response: 'Error al corregir el ejercicio.',
+          responseType: 'correction',
+          error: error.message,
+          timestamp: new Date()
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
+  }
 
-    @Get('health')
-    healthCheck() {
-        return {
-            success: true,
-            message: 'Chatbot service is running',
-            timestamp: new Date().toISOString(),
-            version: process.env.CHATBOT_VERSION || '1.0.0'
-        };
+  /**
+   * Endpoint para solicitar ejercicios nuevos
+   * POST /assistant/generate-exercise
+   */
+  @Post('generate-exercise')
+  async generateExercise(
+    @Body() body: { 
+      module: string; 
+      difficulty?: 'basico' | 'intermedio' | 'avanzado';
+      topic?: string;
     }
+  ): Promise<ChatResponseDto> {
+    try {
+      const response = await this.geminiService.generateExercise(
+        body.module,
+        body.difficulty || 'basico',
+        body.topic
+      );
 
-    @Get('context')
-    getContext() {
-        return {
-            success: true,
-            data: {
-                projectName: 'SaludMap',
-                description: 'Tu Guía Sanitaria y Veterinaria',
-                availableFeatures: [
-                    'Mapa Interactivo',
-                    'Reserva de Turnos',
-                    'Modo Offline',
-                    'Soporte Multilingüe',
-                    'Integración con Seguros'
-                ]
-            }
-        };
+      return {
+        response,
+        responseType: 'exercise',
+        moduleUsed: body.module,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          response: 'Error al generar el ejercicio.',
+          responseType: 'exercise',
+          error: error.message,
+          timestamp: new Date()
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
-    @Get('test')
-    async testGemini(): Promise<string> {
-        return this.geminiService.testConnection();
-    }
+  }
 
+  /**
+   * Endpoint para obtener explicaciones de temas
+   * POST /assistant/explain
+   */
+  @Post('explain')
+  async explainTopic(
+    @Body() body: { topic: string; module?: string }
+  ): Promise<ChatResponseDto> {
+    try {
+      const response = await this.geminiService.explainTopic(body.topic, body.module);
+
+      return {
+        response,
+        responseType: 'explanation',
+        moduleUsed: body.module,
+        timestamp: new Date()
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          response: 'Error al explicar el tema.',
+          responseType: 'explanation',
+          error: error.message,
+          timestamp: new Date()
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  /**
+   * Endpoint para obtener los módulos educativos disponibles
+   * GET /assistant/modules
+   */
+  @Get('modules')
+  getModules() {
+    try {
+      return this.geminiService.getAvailableModules();
+    } catch (error) {
+      throw new HttpException(
+        {
+          message: 'Error al obtener los módulos disponibles.',
+          error: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  /**
+   * Endpoint de salud del servicio
+   * GET /assistant/health
+   */
+  @Get('health')
+  healthCheck() {
+    return {
+      status: 'ok',
+      service: 'AURA - Asistente Educativo',
+      timestamp: new Date(),
+      version: '1.0.0'
+    };
+  }
 }
