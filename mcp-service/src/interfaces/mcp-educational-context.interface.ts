@@ -16,6 +16,6 @@ export interface MCPEducationalContext {
     learningSteps?: string[]; // Pasos para aprender o aplicar el tema
     recommendations?: string[]; // Consejos generales o sugerencias
     sources?: string[];     // Fuentes o referencias utilizadas
-    
+    exercises?: any[]    // Ejercicios relacionados (estructura libre)
   };
 }

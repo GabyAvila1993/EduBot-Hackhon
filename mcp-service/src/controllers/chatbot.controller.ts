@@ -188,12 +188,9 @@ export class ChatbotController {
     }
   }
 
-  /**
-   * Endpoint de salud del servicio
-   * GET /assistant/health
-   */
-  @Get('health')
-  healthCheck() {
+  
+  @Get('Edu')
+  EduCheck() {
     return {
       status: 'ok',
       service: 'AURA - Asistente Educativo',
