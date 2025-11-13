@@ -45,7 +45,7 @@ VITE v5.4.21  ready in 235 ms
 
 ```env
 # Tu API Key de Google Gemini
-GEMINI_API_KEY=AIzaSyC7nz0y0Lupv9TDQA8oSxSyHwlVCuzEh_0
+GEMINI_API_KEY=CodeApi
 
 # Puerto del servidor
 PORT=3000
