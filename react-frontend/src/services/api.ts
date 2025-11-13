@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 // Base URL for your backend API
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000, // Aumentado a 60 segundos para operaciones de Gemini
   headers: {
     'Content-Type': 'application/json',
   },

@@ -40,8 +40,9 @@ export const lenguaContext: MCPEducationalContext = {
           'Acentua__ión (de "acento")',
           'Actri__es (plural de "actriz")',
           '__ente',
-          '__iso (para que suene suave)',
-          'Pasa__ero'
+          'Pasa__ero',
+          'Tu_o (acción de tener)',
+          'Nie_e'
         ]
       },
       {

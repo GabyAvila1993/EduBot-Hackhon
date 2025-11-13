@@ -1,8 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-dotenv.config();
+// Cargar .env desde la raíz del proyecto
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+// También intentar cargar desde el directorio actual como fallback
+if (!process.env.GEMINI_API_KEY) {
+  dotenv.config();
+}
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -25,7 +31,7 @@ async function bootstrap() {
         next();
     });
 
-    const port = 3000;
+    const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
     await app.listen(port);
     console.log(`Servidor backend escuchando en http://localhost:${port}`);
 

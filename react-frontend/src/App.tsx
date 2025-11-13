@@ -17,7 +17,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className={`${darkMode ? 'dark' : ''} bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white`}>
         <div className="relative flex h-auto min-h-screen w-full flex-row">
           <Sidebar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />

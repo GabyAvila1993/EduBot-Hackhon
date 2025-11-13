@@ -267,15 +267,15 @@ const MCPMathematicsExercises: React.FC = () => {
           <div className={`border rounded-lg p-4 mb-6 ${
             isCorrect 
               ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
-              : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+              : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'
           }`}>
             <h3 className={`font-semibold mb-2 ${
-              isCorrect ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'
+              isCorrect ? 'text-green-900 dark:text-green-100' : 'text-orange-900 dark:text-orange-100'
             }`}>
-              Corrección de AURA:
+              Corrección de EduBot:
             </h3>
             <div className={`${
-              isCorrect ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
+              isCorrect ? 'text-green-800 dark:text-green-200' : 'text-orange-800 dark:text-orange-200'
             }`}>
               {aiCorrection.split('\n').map((line, index) => (
                 <p key={index} className="mb-2">{line}</p>
@@ -286,8 +286,8 @@ const MCPMathematicsExercises: React.FC = () => {
 
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <span className="material-symbols-outlined mr-1">calculate</span>
-            Matemáticas - Nivel Primaria
+            <div className="text-base">Matemática</div>
+            
           </div>
           
           {!showResult ? (
