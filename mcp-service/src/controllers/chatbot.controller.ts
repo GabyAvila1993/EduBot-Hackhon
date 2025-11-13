@@ -2,12 +2,14 @@
 
 import { Controller, Post, Get, Body, HttpException, HttpStatus, Param } from '@nestjs/common';
 import { GeminiService } from '../services/gemini.service';
+import { GeminiMCPService } from '../services/gemini-mcp.service';
 import { ChatMessageDto, ChatResponseDto } from '../dto/chat-message.dto';
 
 @Controller('assistant')
 export class ChatbotController {
   constructor(
     private readonly geminiService: GeminiService,
+    private readonly geminiMcpService: GeminiMCPService,
   ) {}
 
   /**
@@ -298,6 +300,51 @@ export class ChatbotController {
         message: 'Error al obtener ejercicios por IDs', 
         error: error.message,
         success: false 
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Devuelve la teoría de un ejercicio específico
+   * GET /assistant/theory/:exerciseId
+   */
+  @Get('theory/:exerciseId')
+  getTheory(@Param('exerciseId') exerciseId: string) {
+    try {
+      const theory = this.geminiService.getTheoryByExerciseId(exerciseId);
+      return {
+        exerciseId: exerciseId,
+        theory: theory,
+        success: true
+      };
+    } catch (error) {
+      throw new HttpException({ 
+        message: 'Error al obtener teoría del ejercicio', 
+        error: error.message,
+        success: false 
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Devuelve la teoría y una explicación simplificada generada por Gemini
+   * GET /assistant/theory-simplified/:exerciseId
+   */
+  @Get('theory-simplified/:exerciseId')
+  async getTheorySimplified(@Param('exerciseId') exerciseId: string) {
+    try {
+      const result = await this.geminiMcpService.getSimplifiedExplanationForExercise(exerciseId);
+      return {
+        exerciseId,
+        theory: result.theory,
+        explanation: result.explanation,
+        success: true
+      };
+    } catch (error) {
+      throw new HttpException({
+        message: 'Error al obtener teoría simplificada',
+        error: error.message,
+        success: false
       }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

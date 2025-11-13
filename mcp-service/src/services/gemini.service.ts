@@ -239,7 +239,7 @@ EJEMPLOS DE REFERENCIA (NO copies exactamente, crea variaciones):
 ${moduleContext && (moduleContext as any).exercises ? JSON.stringify(((moduleContext as any).exercises || []).slice(0, 3), null, 2) : 'No hay ejemplos de ejercicios disponibles.'}
 
 Formato de respuesta:
-**EJERCICIO - ${moduleContext.name}** (Nivel: ${difficulty})
+EJERCICIO - ${moduleContext.name} (Nivel: ${difficulty})
 
 [Instrucciones claras del ejercicio]
 
@@ -275,31 +275,48 @@ Cuando termines, envía tu respuesta para que pueda corregirla.
       const prompt = `
 ${systemPrompt}
 
-TAREA: Explicar el siguiente tema de forma educativa
+TAREA: Generar una explicación educativa clara, estructurada y sin emojis
 
 TEMA: ${topic}
 ${module ? `MÓDULO: ${module}` : ''}
 
-INSTRUCCIONES:
-1. Proporciona una explicación clara y concisa
-2. Usa ejemplos concretos y cotidianos
-3. Estructura la explicación de lo simple a lo complejo
-4. Incluye casos especiales si existen
-5. Termina con ejercicios sugeridos
+INSTRUCCIONES IMPORTANTES:
+1. NO USES EMOJIS en ningún lugar de la respuesta
+2. Estructura la respuesta con secciones claras separadas por líneas en blanco
+3. Usa un lenguaje simple pero académico
+4. Incluye definiciones claras
+5. Proporciona 2-3 ejemplos prácticos y cotidianos
+6. Si hay pasos, enuméralos claramente con números
+7. Termina con ejercicios o actividades sugeridas
+8. Asegúrate de que el contenido sea fácil de leer en un modal
 
-Formato de respuesta:
-**EXPLICACIÓN: ${topic}**
+FORMATO EXACTO DE RESPUESTA (sigue este esquema):
 
-[Definición clara]
+DEFINICIÓN
+[Explicación clara y breve de qué es el concepto, máximo 3 líneas]
 
-**Ejemplos:**
-[2-3 ejemplos concretos]
+CONCEPTOS CLAVE
+[Enumera 3-4 conceptos principales con viñetas]
 
-**Casos especiales:**
-[Si aplica]
+EJEMPLOS
+Ejemplo 1: [Describe un ejemplo cotidiano con resolución paso a paso]
+Ejemplo 2: [Otro ejemplo diferente y práctico]
 
-**Para practicar:**
-[Sugerencias de ejercicios]
+PASOS IMPORTANTES
+1. [Primer paso]
+2. [Segundo paso]
+3. [Tercer paso]
+[Ajusta según sea necesario]
+
+CASOS ESPECIALES O ERRORES COMUNES
+[Menciona 1-2 cosas que los estudiantes suelen confundir]
+
+EJERCICIOS PARA PRACTICAR
+1. [Ejercicio simple]
+2. [Ejercicio intermedio]
+3. [Ejercicio para profundizar]
+
+Asegúrate de que cada sección esté bien separada y sea fácil de leer.
 `;
 
       // Nueva sintaxis de la API @google/genai
@@ -328,7 +345,7 @@ Formato de respuesta:
       let historyText = '';
       if (conversationHistory && conversationHistory.length > 0) {
         historyText = '\nHISTORIAL DE CONVERSACIÓN:\n' + 
-          conversationHistory.map(h => `${h.role === 'user' ? 'Usuario' : 'AURA'}: ${h.content}`).join('\n');
+          conversationHistory.map(h => `${h.role === 'user' ? 'Usuario' : 'EduBot'}: ${h.content}`).join('\n');
       }
 
       const prompt = `
@@ -406,6 +423,44 @@ ofrece guiarlo hacia los módulos disponibles o generar ejercicios.
     } catch (error) {
       console.error('Error en getExercisesByIds:', error);
       throw new Error(`Error al obtener ejercicios por IDs: ${error.message}`);
+    }
+  }
+
+  /**
+   * Obtiene la teoría de un tema específico
+   */
+  getTheoryByExerciseId(exerciseId: string): any {
+    try {
+      // Buscar el ejercicio en todos los contextos
+      for (const context of educationalContexts) {
+        const exercises = (context.content as any)?.exercises || [];
+        const exercise = exercises.find((ex: any) => ex.id === exerciseId);
+
+        if (exercise) {
+          // Encontramos el ejercicio, ahora buscamos la teoría relacionada
+          const title = exercise.title || exerciseId;
+          
+          // Retornar información teórica del contexto
+          return {
+            exerciseId: exerciseId,
+            exerciseTitle: title,
+            moduleId: context.id,
+            moduleName: context.name,
+            moduleDescription: context.content?.description,
+            theory: {
+              mainTopics: context.content?.mainTopics || [],
+              rules: context.content?.rules || [],
+              learningSteps: context.content?.learningSteps || [],
+              recommendations: context.content?.recommendations || []
+            }
+          };
+        }
+      }
+
+      throw new Error(`Ejercicio '${exerciseId}' no encontrado`);
+    } catch (error) {
+      console.error('Error en getTheoryByExerciseId:', error);
+      throw new Error(`Error al obtener teoría del ejercicio ${exerciseId}: ${error.message}`);
     }
   }
 
@@ -546,7 +601,7 @@ ${rule.examples ? `  Ejemplos: ${rule.examples.join(', ')}` : ''}
       }
       
       const prompt = `
-Eres AURA, un tutor experto en "${context.name}". 
+Eres EduBot, un tutor experto en "${context.name}". 
 
 CONTEXTO EDUCATIVO:
 ${contextInfo}

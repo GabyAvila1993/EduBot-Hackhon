@@ -105,6 +105,12 @@ export const apiService = {
     return response.data;
   },
 
+  // Get exercise theory/description
+  getExerciseTheory: async (exerciseId: string) => {
+    const response = await api.get(`/assistant/theory-simplified/${exerciseId}`);
+    return response.data;
+  },
+
   // Mathematics exercises
   getMathematicsExercises: async (): Promise<Exercise[]> => {
     const response = await api.get('/assistant/exercises/matematicas');
