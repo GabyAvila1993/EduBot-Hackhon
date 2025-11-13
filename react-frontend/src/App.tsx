@@ -14,6 +14,8 @@ import MCPOrtografiaExercises from './components/MCPOrtografiaExercises';
 import MCPClasesDepalabrasExercises from './components/MCPClasesDepalabrasExercises';
 import MatematicaInfo from './pages/MatematicaInfo';
 import LenguaInfo from './pages/LenguaInfo';
+import PracticaOrtografiaPage from './pages/PracticaOrtografiaPage';
+import PracticaMatematicaPage from './pages/PracticaMatematicaPage';
 
 
 function App() {
@@ -43,6 +45,8 @@ function App() {
               <Route path="/lengua" element={<LenguaInfo />} />
               <Route path="/lengua/ortografia" element={<MCPOrtografiaExercises />} />
               <Route path="/lengua/clasesdepalabras" element={<MCPClasesDepalabrasExercises />} />
+              <Route path="/practica-ortografia" element={<PracticaOrtografiaPage />} />
+              <Route path="/practica-matematica" element={<PracticaMatematicaPage />} />
             </Routes>
           </main>
         </div>

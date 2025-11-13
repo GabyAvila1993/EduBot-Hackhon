@@ -2,6 +2,7 @@ import { MCPContext } from '../interfaces/mcp-context.interface';
 import { MCPEducationalContext } from '../interfaces/mcp-educational-context.interface';
 import {categoriasGramaticalesContext} from './mcp-categorias-gramaticales';
 import {ortografiaContext} from './mcp-ortografia-espaniol';
+import {actividadesExtraContext} from './mcp-ejercicios-extras-ortografia';
 import {ecuacionesContext} from './mcp-ecuaciones';
 import {operacionesCombinadasContext} from './mcp-ejercicioscombinados';
 import {matematicaContext} from './mcp.ejercicios-matematica';
@@ -50,6 +51,7 @@ export const eduBotContext: MCPContext = {
 // 🔹 Contextos educativos combinados
 export const educationalContexts: MCPEducationalContext[] = [
   ortografiaContext,
+  actividadesExtraContext,
   categoriasGramaticalesContext,
   ecuacionesContext,
   operacionesCombinadasContext,

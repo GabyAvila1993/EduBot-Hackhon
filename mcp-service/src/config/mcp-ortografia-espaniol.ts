@@ -79,14 +79,16 @@ export const ortografiaContext: MCPEducationalContext = {
         exercises: [
             {
                 id: 'ORT-1',
-                title: 'Correcta Ortografía del Español',
-                instruction: 'Corrige los errores ortográficos en las siguientes palabras o frases. Especifica cuál es la regla ortográfica que aplica.',
+                title: 'Aplicando Reglas Ortográficas',
+                instruction: 'Corrige los errores ortográficos en las siguientes palabras o frases.',
                 questions: [
-                    'Escribe correctamente: "ablándome" (debe empezar con B o V)',
                     'Corrige: "caballero" es correcto, pero ¿está bien escrito "abentura"?',
                     'Identifica el error en: "apresiación" (debe ser con C o Z)',
                     'Corrige la palabra: "recojer" (debe ser con G o J)',
-                    '¿Cuál es correcta: "concejo" o "consejo"? Explica la diferencia.'
+                    '¿Cuál es correcta: "concejo" o "consejo"?',
+                    'Corrige el error en la frase: "El niño usó sus lapizes de colores".',
+                    '¿Cuál es la forma correcta: "compasibo" o "compasivo?"',
+                    'Corrige el error en la frase: "El cura escuchó la confeción del acusado".'
                 ]
             }
         ]

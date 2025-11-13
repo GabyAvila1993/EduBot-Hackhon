@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RefuerzoPage: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="p-8">
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -47,9 +50,11 @@ const RefuerzoPage: React.FC = () => {
                         Error de tipo: Cálculo.
                       </p>
                     </div>
-                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
-                      <span className="truncate">Ver lección de repaso</span>
-                    </button>
+                    <div className="flex flex-col gap-2 w-full sm:w-auto">
+                      <button onClick={() => navigate('/practica-matematica')} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
+                        <span className="truncate">Practicar este tema</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -59,25 +64,19 @@ const RefuerzoPage: React.FC = () => {
               <div className="flex flex-col items-stretch justify-start rounded-lg xl:flex-row xl:items-start shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
                 <div className="card-img-biologia w-full xl:w-2/5 xl:max-w-xs bg-center bg-no-repeat aspect-video xl:aspect-auto xl:h-full bg-cover rounded-t-lg xl:rounded-l-lg xl:rounded-r-none"></div>
                 <div className="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
-                  <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
-                    Error en Biología
-                  </p>
-                  <p className="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
-                    ¿Qué parte de la célula produce energía?
-                  </p>
-                  <div className="flex flex-col items-start gap-3 justify-between mt-2 sm:flex-row sm:items-end">
-                    <div className="flex flex-col gap-1">
-                      <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
-                        <span className="text-red-500">Tu respuesta: Núcleo.</span> Respuesta correcta: Mitocondria.
-                      </p>
-                      <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">
-                        Error de tipo: Conceptual.
-                      </p>
+                    <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">Errores de Ortografía</p>
+                    <p className="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">¿Cuál es la forma correcta: "Tuvo" o "Tubo"?</p>
+                    <div className="flex flex-col items-start gap-3 justify-between mt-2 sm:flex-row sm:items-end">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal"><span className="text-red-500">Tu respuesta: Tubo.</span> Respuesta correcta: Tuvo.</p>
+                        <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">Error de tipo: Ortográfico (B/V).</p>
+                      </div>
+                      <div className="flex flex-col gap-2 w-full sm:w-auto">
+                        <button onClick={() => navigate('/practica-ortografia')} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
+                          <span className="truncate">Practicar este tema</span>
+                        </button>
+                      </div>
                     </div>
-                    <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
-                      <span className="truncate">Practicar este tema</span>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -150,6 +149,7 @@ const RefuerzoPage: React.FC = () => {
           </div>
         </aside>
       </div>
+      
     </section>
   );
 };
