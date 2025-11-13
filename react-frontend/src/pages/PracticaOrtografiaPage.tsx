@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import actividadesExtraExercises from '../data/ortografiaExtras';
+import { apiService } from '../services/api';
 
 type QuestionAnswer = string | string[];
 
@@ -10,19 +11,20 @@ const PracticaOrtografiaPage: React.FC = () => {
   const [results, setResults] = useState<Record<string, any>>({});
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({});
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<{ title: string; body: string } | null>(null);
+  const [modalContent, setModalContent] = useState<{ title: string; body: string; exId?: string } | null>(null);
+  const [lastSubmission, setLastSubmission] = useState<any>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackContent, setFeedbackContent] = useState<{ ok: boolean; title: string; body: string; rules?: string[] } | null>(null);
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const res = await fetch('/assistant/exercises/ortografia');
-        if (!res.ok) throw new Error('No hay respuesta del backend');
-        const json = await res.json();
+        const res = await apiService.getExercisesByModule('ortografia');
         let exs: any[] = [];
-        if (json && Array.isArray(json.exercises) && json.exercises.length > 0) {
-          exs = json.exercises;
-        } else if (json && Array.isArray(json)) {
-          exs = json as any[];
+        if (res && Array.isArray(res.exercises) && res.exercises.length > 0) {
+          exs = res.exercises;
+        } else if (Array.isArray(res)) {
+          exs = res as any[];
         } else {
           exs = actividadesExtraExercises;
         }
@@ -199,14 +201,10 @@ const PracticaOrtografiaPage: React.FC = () => {
     const payload = { exercise: exId, answers: buildSubmissionForExercise(exId, ex) };
     setSubmitting(prev => ({ ...prev, [exId]: true }));
     try {
-      const res = await fetch('/assistant/correct', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answer: JSON.stringify(payload), module: 'ortografia', exerciseContext: exId })
-      });
-      const json = await res.json();
-      // controller returns structured result in response
-      const response = json.response || json;
+      const res = await apiService.correctExercise({ answer: JSON.stringify(payload), module: 'ortografia', exerciseContext: exId });
+      // store last submission so the "Continuar" modal can request feedback
+      setLastSubmission({ exercise: exId, answers: buildSubmissionForExercise(exId, ex) });
+      const response = res.response || res;
       setResults(prev => ({ ...prev, [exId]: response }));
       // abrir modal explicativo si hay preguntas incorrectas
       const perQ = response.perQuestion || response.per_question || response.perQuestionResults || null;
@@ -214,7 +212,7 @@ const PracticaOrtografiaPage: React.FC = () => {
       if (anyIncorrect) {
         const explanation = response.explanation || response.explain || response.text || response.message || response.analysis || response.feedback || response;
         const asText = typeof explanation === 'string' ? explanation : JSON.stringify(explanation, null, 2);
-        setModalContent({ title: `Explicación: ${ex.title}`, body: sanitizeText(asText) });
+        setModalContent({ title: `Explicación: ${ex.title}`, body: sanitizeText(asText), exId });
         setModalOpen(true);
       }
     } catch (err) {
@@ -232,13 +230,9 @@ const PracticaOrtografiaPage: React.FC = () => {
     });
     setSubmitting(prev => ({ ...prev, all: true }));
     try {
-      const res = await fetch('/assistant/correct', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answer: JSON.stringify({ exercise: 'all', answers: allAnswers }), module: 'ortografia', exerciseContext: 'all' })
-      });
-      const json = await res.json();
-      const response = json.response || json;
+      const res = await apiService.correctExercise({ answer: JSON.stringify({ exercise: 'all', answers: allAnswers }), module: 'ortografia', exerciseContext: 'all' });
+      setLastSubmission({ exercise: 'all', answers: allAnswers });
+      const response = res.response || res;
       // si viene breakdown por ejercicio lo guardamos en results
       if (response.byExercise) {
         setResults(prev => ({ ...prev, ...response.byExercise }));
@@ -250,7 +244,7 @@ const PracticaOrtografiaPage: React.FC = () => {
       if (anyIncorrect) {
         const explanation = response.explanation || response.text || response.message || response.analysis || response.feedback || response;
         const asText = typeof explanation === 'string' ? explanation : JSON.stringify(explanation, null, 2);
-        setModalContent({ title: `Explicación: Corrección completa`, body: sanitizeText(asText) });
+        setModalContent({ title: `Explicación: Corrección completa`, body: sanitizeText(asText), exId: 'all' });
         setModalOpen(true);
       }
     } catch (err) {
@@ -265,6 +259,44 @@ const PracticaOrtografiaPage: React.FC = () => {
   const sanitizeText = (s: string) => {
     return s.replace(/`{1,3}/g, '').replace(/\*{1,3}/g, '').replace(/__+/g, '').trim();
   };
+
+  const parseModalBody = (body: string) => {
+    try {
+      return JSON.parse(body);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const requestGeminiFeedback = async () => {
+    if (!lastSubmission) return;
+    // try to find rules for the exercise in loaded exercises
+    let rules: string[] | undefined;
+    if (modalContent && modalContent.exId && modalContent.exId !== 'all') {
+      const ex = exercises.find(e => e.id === modalContent.exId);
+      if (ex) {
+        // prefer structured rules if present
+        if (ex.rules && Array.isArray(ex.rules)) rules = ex.rules.map((r: any) => typeof r === 'string' ? r : (r.title ? `${r.title}: ${Array.isArray(r.content) ? r.content.join(' ') : r.content}` : JSON.stringify(r)));
+        else if (ex.content && ex.content.rules && Array.isArray(ex.content.rules)) rules = ex.content.rules.map((r: any) => typeof r === 'string' ? r : (r.title ? `${r.title}: ${Array.isArray(r.content) ? r.content.join(' ') : r.content}` : JSON.stringify(r)));
+      }
+    }
+
+    try {
+      const res = await apiService.requestFeedback({ ...lastSubmission, module: 'ortografia', rules });
+      const feedback = res.feedback || res;
+      const ok = feedback.ok === true || feedback.verdict === 'correct' || feedback.correct === true;
+      const explanation = feedback.explanation || feedback.text || feedback.message || JSON.stringify(feedback, null, 2);
+      const returnedRules = feedback.rules || rules || [];
+      setFeedbackContent({ ok, title: ok ? 'Correcto' : 'Incorrecto', body: sanitizeText(typeof explanation === 'string' ? explanation : JSON.stringify(explanation)), rules: returnedRules });
+      setFeedbackOpen(true);
+      setModalOpen(false);
+    } catch (err) {
+      setFeedbackContent({ ok: false, title: 'Error', body: String(err), rules: [] });
+      setFeedbackOpen(true);
+    }
+  };
+
+  const closeFeedback = () => { setFeedbackOpen(false); setFeedbackContent(null); };
 
   const findAnyIncorrect = (resp: any) => {
     if (!resp) return false;
@@ -336,10 +368,75 @@ const PracticaOrtografiaPage: React.FC = () => {
               <button onClick={closeModal} className="text-gray-500">Cerrar ✕</button>
             </div>
 
-            <div className="max-h-[60vh] overflow-auto text-sm text-gray-700 whitespace-pre-wrap">{modalContent.body}</div>
+            <div className="max-h-[60vh] overflow-auto text-sm text-gray-700">
+              {(() => {
+                const parsed = parseModalBody(modalContent.body);
+                if (parsed && typeof parsed === 'object') {
+                  return (
+                    <div className="space-y-3">
+                      {parsed.aiUnavailable && (
+                        <div className="p-3 rounded bg-yellow-50 text-yellow-800">La IA no está temporalmente disponible; mostrando información disponible.</div>
+                      )}
+
+                      {Array.isArray(parsed.perQuestion) ? (
+                        parsed.perQuestion.map((p: any, i: number) => (
+                          <div key={i} className="p-3 border rounded bg-gray-50">
+                            <div className="font-semibold">Pregunta {p.index != null ? p.index + 1 : i + 1}</div>
+                            <div className="mt-1 text-sm text-gray-700"><strong>Resultado:</strong> {p.isCorrect === true ? 'Correcto' : p.isCorrect === false ? 'Incorrecto' : 'No evaluado'}</div>
+                            {p.analysis && <div className="mt-1 text-sm text-gray-700"><strong>Análisis:</strong> {p.analysis}</div>}
+                            {p.correction && <div className="mt-1 text-sm text-gray-700"><strong>Corrección:</strong> <div className="whitespace-pre-wrap">{p.correction}</div></div>}
+                            {p.theory && <div className="mt-1 text-sm text-gray-700"><strong>Teoría:</strong> {p.theory}</div>}
+                          </div>
+                        ))
+                      ) : (
+                        <pre className="whitespace-pre-wrap">{modalContent.body}</pre>
+                      )}
+
+                      {Array.isArray(parsed.recommendations) && parsed.recommendations.length > 0 && (
+                        <div className="mt-2 p-3 border rounded bg-blue-50">
+                          <div className="font-semibold">Recomendaciones</div>
+                          <ul className="list-disc list-inside mt-2 text-sm text-gray-700">
+                            {parsed.recommendations.map((r: any, idx: number) => <li key={idx}>{r}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                return <div className="whitespace-pre-wrap">{modalContent.body}</div>;
+              })()}
+            </div>
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={closeModal} className="px-4 py-2 rounded bg-gray-200 text-gray-800">Cerrar</button>
+              <button onClick={requestGeminiFeedback} className="px-4 py-2 rounded bg-primary text-white">Continuar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {feedbackOpen && feedbackContent && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={closeFeedback}></div>
+          <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-background-dark/80 rounded-lg shadow-lg p-6">
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="text-xl font-bold text-[#111318]">{feedbackContent.title}</h3>
+              <button onClick={closeFeedback} className="text-gray-500">Cerrar ✕</button>
+            </div>
+
+            <div className="max-h-[60vh] overflow-auto text-sm text-gray-700 whitespace-pre-wrap">{feedbackContent.body}</div>
+
+            {feedbackContent.rules && feedbackContent.rules.length > 0 && (
+              <div className="mt-4 p-4 border rounded bg-gray-50">
+                <h4 className="font-semibold mb-2">Reglas / Material de estudio relacionado</h4>
+                <ul className="list-disc list-inside text-sm text-gray-700">
+                  {feedbackContent.rules.map((r, i) => <li key={i}>{r}</li>)}
+                </ul>
+              </div>
+            )}
 
             <div className="mt-4 flex justify-end">
-              <button onClick={closeModal} className="px-4 py-2 rounded bg-primary text-white">Cerrar</button>
+              <button onClick={closeFeedback} className="px-4 py-2 rounded bg-primary text-white">Cerrar</button>
             </div>
           </div>
         </div>

@@ -238,9 +238,28 @@ Solo el caso de respuestas incorrectas debe incluir el análisis y la explicaci�
     try {
       const moduleContext = this.findModuleContext(module);
       const systemPrompt = this.buildSystemPrompt(moduleContext);
+      // Intentar obtener el enunciado / preguntas del ejercicio desde el contexto del módulo
+      let exerciseSpec: any = null;
+      try {
+        const exercisesList = (moduleContext as any)?.content?.exercises;
+        if (Array.isArray(exercisesList) && exerciseId) {
+          const normalizedId = String(exerciseId).toLowerCase();
+          exerciseSpec = exercisesList.find((e: any) => String(e.id || '').toLowerCase() === normalizedId || String(e.id || '').toLowerCase().includes(normalizedId));
+        }
+      } catch (e) {
+        // Ignorar si no hay lista de ejercicios
+        exerciseSpec = null;
+      }
 
-      // Construir sección de preguntas/respuesas para el prompt
-      const qaLines = answers.map((a, i) => `Pregunta ${i + 1}: "${a.replace(/\"/g, '\\"')}"`).join('\n');
+      // Construir sección de preguntas/respuestas para el prompt
+      const qaLines = answers.map((a, i) => `Respuesta ${i + 1}: "${String(a).replace(/\"/g, '\\"')}"`).join('\n');
+
+      // Si contamos con el enunciado del ejercicio, lo incluimos para dar contexto a la IA
+      let exerciseBlock = '';
+      if (exerciseSpec) {
+        const qtext = Array.isArray(exerciseSpec.questions) ? exerciseSpec.questions.map((q: any, idx: number) => `Pregunta ${idx + 1}: ${q}`).join('\n') : '';
+        exerciseBlock = `EJERCICIO: ${exerciseSpec.title || exerciseSpec.id || ''}\n${exerciseSpec.instruction ? `Instrucciones: ${exerciseSpec.instruction}\n` : ''}\n${qtext}\n\n`;
+      }
 
       const prompt = `
 ${systemPrompt}
@@ -262,6 +281,7 @@ INSTRUCCIONES:
 4) Si sugieres ejercicios extra, incluye sus identificadores o descripciones en recommendations.
 5) La salida debe ser únicamente JSON válido, sin texto adicional.
 
+${exerciseBlock}
 EJERCICIO-ID: ${exerciseId}
 RESPUESTAS DEL ESTUDIANTE:
 ${qaLines}

@@ -92,12 +92,26 @@ export class ChatbotController {
       const exerciseId = payload.exercise || body.exerciseContext || '';
       const answers: string[] = Array.isArray(payload.answers) ? payload.answers : [payload.answers || ''];
 
-      const structured = await this.geminiService.evaluateExerciseStructured(
-        exerciseId,
-        answers,
-        body.module,
-        body.exerciseContext
-      );
+      let structured: any = {};
+      try {
+        structured = await this.geminiService.evaluateExerciseStructured(
+          exerciseId,
+          answers,
+          body.module,
+          body.exerciseContext
+        );
+      } catch (err) {
+        // Si la IA está caída o sobrecargada, devolvemos un fallback para que
+        // el frontend pueda mostrar un mensaje amigable y seguir funcionando
+        console.error('evaluateExerciseStructured fallo (fallback):', err);
+        structured = {
+          isCorrect: null,
+          perQuestion: answers.map((a: any, i: number) => ({ index: i, isCorrect: null, analysis: 'No disponible - IA temporalmente fuera de servicio', correction: '', theory: '' })),
+          recommendations: [],
+          _error: String(err),
+          aiUnavailable: true,
+        };
+      }
 
       // Ejercicios extras deshabilitados temporalmente
       let extras = [];

@@ -117,6 +117,18 @@ export const apiService = {
     return response.data.exercises || [];
   },
 
+  // Correct endpoint used by practice pages
+  correctExercise: async (payload: { answer: string; module: string; exerciseContext: string }) => {
+    const response = await api.post('/assistant/correct', payload);
+    return response.data;
+  },
+
+  // Request feedback (Gemini) for a submission
+  requestFeedback: async (payload: { exercise: string; answers: any; module: string; rules?: string[] }) => {
+    const response = await api.post('/assistant/feedback', payload);
+    return response.data;
+  },
+
   // Language exercises
   getLanguageExercises: async (): Promise<Exercise[]> => {
     const response = await api.get('/assistant/exercises/lengua');
