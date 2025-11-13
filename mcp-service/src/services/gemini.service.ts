@@ -3,6 +3,7 @@
 // src/services/gemini.service.ts
 
 import { Injectable } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { eduBotContext, educationalContexts } from '../config/mcp-context';
 import { MCPEducationalContext } from '../interfaces/mcp-educational-context.interface';
@@ -10,7 +11,19 @@ import { MCPEducationalContext } from '../interfaces/mcp-educational-context.int
 @Injectable()
 export class GeminiService {
   private ai: GoogleGenAI;
+ 
+  // Número máximo de intentos para llamadas a la API externa
+  private readonly maxGenerateAttempts = Number(process.env.GEMINI_MAX_ATTEMPTS || '3');
+  private readonly baseBackoffMs = Number(process.env.GEMINI_BASE_BACKOFF_MS || '500');
+  // Caché simple en memoria para respuestas de la API (key -> { text, ts })
+  private readonly cache = new Map<string, { text: string; ts: number }>();
+  private readonly cacheTTL = Number(process.env.GEMINI_CACHE_TTL_MS || '86400000'); // 24h por defecto
 
+  // Circuit breaker simple
+  private circuitFailures = 0;
+  private readonly circuitThreshold = Number(process.env.GEMINI_CIRCUIT_THRESHOLD || '5');
+  private readonly circuitCooldownMs = Number(process.env.GEMINI_CIRCUIT_COOLDOWN_MS || '60000'); // 1 min
+  private circuitOpenUntil = 0;
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
@@ -18,6 +31,89 @@ export class GeminiService {
     }
     // Inicialización correcta según la nueva API
     this.ai = new GoogleGenAI({ apiKey });
+  }
+
+  /**
+   * Wrapper para `this.ai.models.generateContent` con reintentos exponenciales y jitter.
+   * Reintenta en errores transitorios como 503. Lanza un Error amigable si falla después
+   * de agotar los intentos.
+   */
+  private async generateContentWithRetries(request: any): Promise<any> {
+    const maxAttempts = Math.max(1, this.maxGenerateAttempts);
+    const baseDelay = Math.max(100, this.baseBackoffMs);
+
+    let lastError: any = null;
+
+    // Generar key de caché a partir del modelo + contenido
+    const contentsStr = Array.isArray(request.contents) ? request.contents.join('') : String(request.contents || '');
+    const cacheKey = crypto.createHash('sha256').update(`${request.model}::${contentsStr}`).digest('hex');
+
+    // Si el circuit breaker está abierto, devolver valor en caché si existe
+    if (Date.now() < this.circuitOpenUntil) {
+      const cached = this.cache.get(cacheKey);
+      if (cached && (Date.now() - cached.ts) < this.cacheTTL) {
+        console.warn('Circuito abierto: devolviendo respuesta cacheada');
+        return { text: cached.text };
+      }
+      throw new Error('Servicio de IA en modo de recuperación temporal (circuito abierto)');
+    }
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const res = await this.ai.models.generateContent(request);
+        // Guardar en caché la respuesta y resetear contador de fallos del circuito
+        try {
+          const text = res?.text || '';
+          this.cache.set(cacheKey, { text, ts: Date.now() });
+          this.circuitFailures = 0;
+        } catch (e) {
+          // ignorar errores de caché
+        }
+        return res;
+      } catch (err: any) {
+        lastError = err;
+        // Determinar si es un error transitorio (503 / overloaded)
+        const isTransient = (
+          err && (
+            err.status === 503 ||
+            err?.error?.code === 503 ||
+            (typeof err?.error?.status === 'string' && err.error.status.toLowerCase().includes('unavail')) ||
+            (err?.message && err.message.includes('overloaded'))
+          )
+        );
+
+        console.warn(`Intento ${attempt} fallo en generateContent: ${err?.message || err}. Transitorio=${isTransient}`);
+
+        if (!isTransient || attempt === maxAttempts) break;
+
+        // Backoff exponencial con jitter
+        const delay = Math.round(baseDelay * Math.pow(2, attempt - 1) + Math.random() * 100);
+        await new Promise(res => setTimeout(res, delay));
+      }
+    }
+
+    console.error('generateContentWithRetries: agotados los intentos, error:', lastError);
+
+    // Incrementar contador de fallos y abrir circuito si aplica
+    try {
+      this.circuitFailures += 1;
+      if (this.circuitFailures >= this.circuitThreshold) {
+        this.circuitOpenUntil = Date.now() + this.circuitCooldownMs;
+        console.warn(`Circuit breaker abierto por ${this.circuitCooldownMs}ms`);
+      }
+    } catch (e) {
+      // no bloquear por errores en lógica de circuit
+    }
+
+    // Si hay caché, devolverlo en lugar de lanzar
+    const cached = this.cache.get(cacheKey);
+    if (cached && (Date.now() - cached.ts) < this.cacheTTL) {
+      console.warn('generateContentWithRetries: devolviendo respuesta cacheada tras fallos');
+      return { text: cached.text };
+    }
+
+    // Lanzar un error más legible para consumidores (frontend / servicios)
+    throw new Error('El servicio de IA está temporalmente sobrecargado. Por favor intenta de nuevo en unos minutos.');
   }
 
   /**
@@ -116,8 +212,8 @@ Formato de respuesta (IMPORTANTE):
 Solo el caso de respuestas incorrectas debe incluir el análisis y la explicación extensa.
 `;
 
-      // Nueva sintaxis de la API @google/genai
-      const response = await this.ai.models.generateContent({
+      // Nueva sintaxis de la API @google/genai con reintentos
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });
@@ -174,7 +270,7 @@ RESPONDE AHORA EN JSON:
 `;
 
 
-      const response = await this.ai.models.generateContent({
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });
@@ -252,7 +348,7 @@ Cuando termines, envía tu respuesta para que pueda corregirla.
 `;
 
       // Nueva sintaxis de la API @google/genai
-      const response = await this.ai.models.generateContent({
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });
@@ -320,7 +416,7 @@ Asegúrate de que cada sección esté bien separada y sea fácil de leer.
 `;
 
       // Nueva sintaxis de la API @google/genai
-      const response = await this.ai.models.generateContent({
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });
@@ -358,8 +454,8 @@ Responde de forma natural, educativa y amigable. Si el usuario solicita ayuda es
 ofrece guiarlo hacia los módulos disponibles o generar ejercicios.
 `;
 
-      // Nueva sintaxis de la API @google/genai
-      const response = await this.ai.models.generateContent({
+      // Nueva sintaxis de la API @google/genai con reintentos
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });
@@ -630,7 +726,7 @@ INSTRUCCIONES:
 Solo las respuestas incorrectas deben incluir el análisis y la explicación extensa.
 `;
 
-      const response = await this.ai.models.generateContent({
+      const response = await this.generateContentWithRetries({
         model: 'gemini-2.5-flash',
         contents: prompt
       });

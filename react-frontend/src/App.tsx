@@ -15,6 +15,7 @@ import MCPClasesDepalabrasExercises from './components/MCPClasesDepalabrasExerci
 import MatematicaInfo from './pages/MatematicaInfo';
 import LenguaInfo from './pages/LenguaInfo';
 
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
