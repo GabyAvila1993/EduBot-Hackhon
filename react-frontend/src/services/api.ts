@@ -98,6 +98,13 @@ export const apiService = {
     return response.data;
   },
 
+  // Get exercises by specific IDs
+  getExercisesByIds: async (ids: string[]) => {
+    const idsString = ids.join(',');
+    const response = await api.get(`/assistant/exercises-by-ids/${idsString}`);
+    return response.data;
+  },
+
   // Mathematics exercises
   getMathematicsExercises: async (): Promise<Exercise[]> => {
     const response = await api.get('/assistant/exercises/matematicas');

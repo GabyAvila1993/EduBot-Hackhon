@@ -75,6 +75,20 @@ export const ortografiaContext: MCPEducationalContext = {
         sources: [
             'Material educativo: "Recordamos qué es la ortografía".',
             'Normas ortográficas de la Real Academia Española (RAE).'
+        ],
+        exercises: [
+            {
+                id: 'ORT-1',
+                title: 'Correcta Ortografía del Español',
+                instruction: 'Corrige los errores ortográficos en las siguientes palabras o frases. Especifica cuál es la regla ortográfica que aplica.',
+                questions: [
+                    'Escribe correctamente: "ablándome" (debe empezar con B o V)',
+                    'Corrige: "caballero" es correcto, pero ¿está bien escrito "abentura"?',
+                    'Identifica el error en: "apresiación" (debe ser con C o Z)',
+                    'Corrige la palabra: "recojer" (debe ser con G o J)',
+                    '¿Cuál es correcta: "concejo" o "consejo"? Explica la diferencia.'
+                ]
+            }
         ]
     }
 };

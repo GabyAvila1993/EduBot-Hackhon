@@ -69,10 +69,12 @@ const PerfilPage: React.FC = () => {
                     <span className="material-symbols-outlined">calculate</span>
                   </div>
                   <div className="flex-1">
+                    
                     <div className="flex justify-between items-center mb-1">
                       <p className="font-semibold text-slate-800 dark:text-white">Matemáticas</p>
                       <span className="text-sm font-medium text-blue-500">85%</span>
                     </div>
+
                     <div className="w-full rounded-full bg-slate-200 dark:bg-slate-700 h-2">
                       <div className="progress-85 h-2 rounded-full bg-blue-500"></div>
                     </div>
@@ -113,11 +115,13 @@ const PerfilPage: React.FC = () => {
                   <div className="flex items-center justify-center size-12 rounded-lg bg-red-500/20 text-red-500">
                     <span className="material-symbols-outlined">translate</span>
                   </div>
+                  
                   <div className="flex-1">
                     <div className="flex justify-between items-center mb-1">
                       <p className="font-semibold text-slate-800 dark:text-white">Lengua y Literatura</p>
                       <span className="text-sm font-medium text-red-500">90%</span>
                     </div>
+
                     <div className="w-full rounded-full bg-slate-200 dark:bg-slate-700 h-2">
                       <div className="progress-90 h-2 rounded-full bg-red-500"></div>
                     </div>

@@ -370,23 +370,80 @@ ofrece guiarlo hacia los módulos disponibles o generar ejercicios.
   }
 
   /**
+   * Obtiene ejercicios específicos por su ID
+   */
+  getExercisesByIds(exerciseIds: string[]): any[] {
+    try {
+      const results: any[] = [];
+
+      // Buscar cada ejercicio por ID en todos los contextos
+      for (const exerciseId of exerciseIds) {
+        for (const context of educationalContexts) {
+          const exercises = (context.content as any)?.exercises || [];
+          const exercise = exercises.find((ex: any) => ex.id === exerciseId);
+
+          if (exercise) {
+            results.push({
+              id: exercise.id,
+              title: exercise.title || `Ejercicio ${exerciseId}`,
+              instruction: exercise.instruction || '',
+              questions: exercise.questions || [],
+              difficulty: this.inferDifficulty(exercise),
+              type: this.inferType(exercise, context.id),
+              contextId: context.id,
+              module: context.name
+            });
+            break;
+          }
+        }
+      }
+
+      if (results.length === 0) {
+        throw new Error(`No se encontraron ejercicios con IDs: ${exerciseIds.join(', ')}`);
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Error en getExercisesByIds:', error);
+      throw new Error(`Error al obtener ejercicios por IDs: ${error.message}`);
+    }
+  }
+
+  /**
    * Obtiene ejercicios específicos de un módulo desde los archivos MCP
    */
   getExercisesByModule(module: string): any[] {
     try {
-      const normalizedModule = module.toLowerCase();
+      const normalizedModule = module.toLowerCase().replace(/[-_\s]/g, '');
       let targetContext: MCPEducationalContext | undefined;
 
-      // Buscar el contexto apropiado
-      if (normalizedModule.includes('matemat') || normalizedModule === 'matematicas') {
-        targetContext = educationalContexts.find(ctx => ctx.id === 'matematica-operaciones');
-      } else if (normalizedModule.includes('lengua') || normalizedModule === 'lengua') {
-        targetContext = educationalContexts.find(ctx => ctx.id === 'lengua-espanol');
+      // Mapeo explícito de módulos del frontend a contextos educativos
+      const moduleMapping: { [key: string]: string } = {
+        // Matemática
+        'matemat': 'matematica-operaciones',
+        'ecuaciones': 'ecuaciones-primer-grado',
+        'ejercicioscombinados': 'operaciones-combinadas-enteros',
+        'operacionescombinadas': 'operaciones-combinadas-enteros',
+        
+        // Lengua
+        'lengua': 'lengua-espanol',
+        'ortografia': 'ortografia-espanol',
+        'clasesdepalabras': 'categorias-gramaticales',
+        'categoriasgramaticales': 'categorias-gramaticales',
+      };
+
+      // Buscar en el mapeo
+      const mappedId = Object.keys(moduleMapping).find(key => 
+        normalizedModule.includes(key)
+      );
+
+      if (mappedId) {
+        targetContext = educationalContexts.find(ctx => ctx.id === moduleMapping[mappedId]);
       } else {
-        // Buscar por ID o nombre
+        // Fallback: buscar por ID o nombre
         targetContext = educationalContexts.find(ctx => 
-          ctx.id.toLowerCase().includes(normalizedModule) || 
-          ctx.name.toLowerCase().includes(normalizedModule)
+          ctx.id.toLowerCase().replace(/[-_\s]/g, '').includes(normalizedModule) || 
+          ctx.name.toLowerCase().replace(/[-_\s]/g, '').includes(normalizedModule)
         );
       }
 

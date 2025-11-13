@@ -167,6 +167,23 @@ export const categoriasGramaticalesContext: MCPEducationalContext = {
     sources: [
       'Material educativo: "Clases de palabras o categorías gramaticales".',
       'Gramática básica del español - RAE (Real Academia Española).'
+    ],
+    exercises: [
+      {
+        id: 'GRAM-1',
+        title: 'Identificación de Clases de Palabras',
+        instruction: 'Identifica la clase de palabra (sustantivo, verbo, adjetivo, adverbio, preposición, conjunción, artículo o pronombre) para cada palabra destacada en las siguientes oraciones.',
+        questions: [
+          'En la oración "El gato negro salta rápidamente", ¿qué clase de palabra es "rápidamente"?',
+          'En "Yo compré un libro", ¿qué es "compré"?',
+          'En "La casa grande está entre los árboles", ¿cuál es la clase de "entre"?',
+          'En "Él y yo corremos", ¿qué clase de palabra es "y"?',
+          'En "María estudia química", ¿qué clase es "María"?',
+          'En "Este libro es interesante", identifica el pronombre demostrativo.',
+          'En "Habló claramente", ¿qué palabra modifica al verbo?',
+          'En "Un día soleado", ¿cuál es el artículo indeterminado?'
+        ]
+      }
     ]
   }
 };

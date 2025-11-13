@@ -280,6 +280,29 @@ export class ChatbotController {
   }
 
   /**
+   * Devuelve ejercicios específicos por sus IDs
+   * GET /assistant/exercises-by-ids/:ids (ids separados por comas: MAT-1,MAT-2)
+   */
+  @Get('exercises-by-ids/:ids')
+  getExercisesByIds(@Param('ids') ids: string) {
+    try {
+      const exerciseIds = ids.split(',').map(id => id.trim());
+      const exercises = this.geminiService.getExercisesByIds(exerciseIds);
+      return {
+        ids: exerciseIds,
+        exercises: exercises,
+        success: true
+      };
+    } catch (error) {
+      throw new HttpException({ 
+        message: 'Error al obtener ejercicios por IDs', 
+        error: error.message,
+        success: false 
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
    * Devuelve el HTML de la plantilla para el módulo solicitado (si existe o genera)
    * GET /assistant/template/:module
    */

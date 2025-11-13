@@ -8,6 +8,12 @@ import RefuerzoPage from './pages/RefuerzoPage';
 import PerfilPage from './pages/PerfilPage';
 import MCPMathematicsExercises from './components/MCPMathematicsExercises';
 import MCPLanguageExercises from './components/MCPLanguageExercises';
+import MCPEcuacionesExercises from './components/MCPEcuacionesExercises';
+import MCPOperacionesCombinadosExercises from './components/MCPOperacionesCombinadosExercises';
+import MCPOrtografiaExercises from './components/MCPOrtografiaExercises';
+import MCPClasesDepalabrasExercises from './components/MCPClasesDepalabrasExercises';
+import MatematicaInfo from './pages/MatematicaInfo';
+import LenguaInfo from './pages/LenguaInfo';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -30,8 +36,12 @@ function App() {
               <Route path="/cursos" element={<CursosPage />} />
               <Route path="/refuerzo" element={<RefuerzoPage />} />
               <Route path="/perfil" element={<PerfilPage />} />
-              <Route path="/matematicas" element={<MCPMathematicsExercises />} />
-              <Route path="/lengua" element={<MCPLanguageExercises />} />
+              <Route path="/matematicas" element={<MatematicaInfo />} />
+              <Route path="/matematicas/ecuaciones" element={<MCPEcuacionesExercises />} />
+              <Route path="/matematicas/ejercicioscombinados" element={<MCPOperacionesCombinadosExercises />} />
+              <Route path="/lengua" element={<LenguaInfo />} />
+              <Route path="/lengua/ortografia" element={<MCPOrtografiaExercises />} />
+              <Route path="/lengua/clasesdepalabras" element={<MCPClasesDepalabrasExercises />} />
             </Routes>
           </main>
         </div>
