@@ -1,4 +1,6 @@
 import React from 'react';
+import algebraImg from '../images/algebra.png';
+import ortografiaImg from '../images/Ortografia.png';
 import { useNavigate } from 'react-router-dom';
 
 const RefuerzoPage: React.FC = () => {
@@ -33,7 +35,7 @@ const RefuerzoPage: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div className="w-full">
               <div className="flex flex-col items-stretch justify-start rounded-lg xl:flex-row xl:items-start shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
-                <div className="card-img-algebra w-full xl:w-2/5 xl:max-w-xs bg-center bg-no-repeat aspect-video xl:aspect-auto xl:h-full bg-cover rounded-t-lg xl:rounded-l-lg xl:rounded-r-none"></div>
+                <img src={algebraImg} alt="Álgebra" className="card-img-algebra w-full xl:w-2/5 xl:max-w-xs bg-center bg-no-repeat aspect-video xl:aspect-auto xl:h-full bg-cover rounded-t-lg xl:rounded-l-lg xl:rounded-r-none object-cover" />
                 <div className="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
                   <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">
                     Error en Álgebra
@@ -62,7 +64,7 @@ const RefuerzoPage: React.FC = () => {
 
             <div className="w-full">
               <div className="flex flex-col items-stretch justify-start rounded-lg xl:flex-row xl:items-start shadow-sm border border-gray-200 dark:border-gray-800 bg-white dark:bg-background-dark/50">
-                <div className="card-img-biologia w-full xl:w-2/5 xl:max-w-xs bg-center bg-no-repeat aspect-video xl:aspect-auto xl:h-full bg-cover rounded-t-lg xl:rounded-l-lg xl:rounded-r-none"></div>
+                <img src={ortografiaImg} alt="Ortografía" className="card-img-ortografia w-full xl:w-2/5 xl:max-w-xs bg-center bg-no-repeat aspect-video xl:aspect-auto xl:h-full bg-cover rounded-t-lg xl:rounded-l-lg xl:rounded-r-none object-cover" />
                 <div className="flex w-full grow flex-col items-stretch justify-center gap-2 p-4">
                     <p className="text-[#616f89] dark:text-gray-400 text-sm font-normal leading-normal">Errores de Ortografía</p>
                     <p className="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">¿Cuál es la forma correcta: "Tuvo" o "Tubo"?</p>
