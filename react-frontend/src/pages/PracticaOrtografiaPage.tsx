@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import actividadesExtraExercises from '../data/ortografiaExtras';
+import { useLocation } from 'react-router-dom';
+import actividadesExtraExercises, { Question } from '../data/ortografiaExtras';
 import { apiService } from '../services/api';
 
 type QuestionAnswer = string | string[];
@@ -16,12 +17,18 @@ const PracticaOrtografiaPage: React.FC = () => {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackContent, setFeedbackContent] = useState<{ ok: boolean; title: string; body: string; rules?: string[] } | null>(null);
 
+  const location = useLocation();
+
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         const res = await apiService.getExercisesByModule('ortografia');
         let exs: any[] = [];
-        if (res && Array.isArray(res.exercises) && res.exercises.length > 0) {
+        // If navigation includes explicit source to load local exercises, use them
+        const navState: any = (location && (location as any).state) || {};
+        if (navState.source === 'ortografiaExtras') {
+          exs = actividadesExtraExercises;
+        } else if (res && Array.isArray(res.exercises) && res.exercises.length > 0) {
           exs = res.exercises;
         } else if (Array.isArray(res)) {
           exs = res as any[];
@@ -33,13 +40,14 @@ const PracticaOrtografiaPage: React.FC = () => {
         const initialAnswers: Record<string, QuestionAnswer[]> = {};
         exs.forEach(ex => {
           const arr: QuestionAnswer[] = [];
-          ex.questions.forEach((q: string) => {
-            if (q.includes('_')) {
-              const blanks = (q.match(/_/g) || []).length;
+          ex.questions.forEach((q: Question) => {
+            const text = (q && (q as any).text) ? (q as any).text : '';
+            if ((q as any).kind === 'fill' || text.includes('_')) {
+              const blanks = (text.match(/_/g) || []).length;
               arr.push(Array(blanks).fill(''));
-            } else if (q.includes(' / ') || q.match(/\[.*?\]/)) {
+            } else if ((q as any).kind === 'choose' || text.includes(' / ') || text.match(/\[.*?\]/)) {
               arr.push('');
-            } else if (q && q.length > 80 && q.includes('grasiosa')) {
+            } else if ((q as any).kind === 'correct' && text && text.length > 80 && text.includes('grasiosa')) {
               arr.push(Array(5).fill(''));
             } else {
               arr.push('');
@@ -54,13 +62,14 @@ const PracticaOrtografiaPage: React.FC = () => {
         const initialAnswers: Record<string, QuestionAnswer[]> = {};
         actividadesExtraExercises.forEach(ex => {
           const arr: QuestionAnswer[] = [];
-          ex.questions.forEach((q: string) => {
-            if (q.includes('_')) {
-              const blanks = (q.match(/_/g) || []).length;
+          ex.questions.forEach((q: Question) => {
+            const text = (q && (q as any).text) ? (q as any).text : '';
+            if ((q as any).kind === 'fill' || text.includes('_')) {
+              const blanks = (text.match(/_/g) || []).length;
               arr.push(Array(blanks).fill(''));
-            } else if (q.includes(' / ') || q.match(/\[.*?\]/)) {
+            } else if ((q as any).kind === 'choose' || text.includes(' / ') || text.match(/\[.*?\]/)) {
               arr.push('');
-            } else if (q && q.length > 80 && q.includes('grasiosa')) {
+            } else if ((q as any).kind === 'correct' && text && text.length > 80 && text.includes('grasiosa')) {
               arr.push(Array(5).fill(''));
             } else {
               arr.push('');
@@ -94,15 +103,17 @@ const PracticaOrtografiaPage: React.FC = () => {
     });
   };
 
-  const renderQuestion = (exId: string, q: string, qIndex: number) => {
-    // blanks like Tu_o or _olsa
-    if (q.includes('_')) {
-      const parts = q.split('_');
+  const renderQuestion = (exId: string, q: Question, qIndex: number) => {
+    const text = (q as any).text || '';
+
+    // blanks (fill)
+    if ((q as any).kind === 'fill' || text.includes('_')) {
+      const parts = text.split('_');
       const blanks = parts.length - 1;
       const slots = (answers[exId] && Array.isArray(answers[exId][qIndex]) ? (answers[exId][qIndex] as string[]).length : blanks);
       return (
         <div className="flex items-center gap-2" key={qIndex}>
-          {parts.map((part, i) => (
+          {parts.map((part: string, i: number) => (
             <React.Fragment key={i}>
               <span>{part}</span>
               {i < blanks && (
@@ -119,28 +130,13 @@ const PracticaOrtografiaPage: React.FC = () => {
     }
 
     // bracket options like 'El [viaje / viage] fue...'
-    const bracketMatch = q.match(/\[(.*?)\]/);
-    if (bracketMatch) {
-      const inner = bracketMatch[1];
-      const opts = inner.split('/').map(s => s.trim());
+    const bracketMatch = text.match(/\[(.*?)\]/);
+    if (bracketMatch || (q as any).kind === 'choose') {
+      const inner = bracketMatch ? bracketMatch[1] : '';
+      const opts = (q as any).kind === 'choose' ? (q as any).options || [] : inner.split('/').map((s: string) => s.trim());
       return (
         <div key={qIndex} className="flex flex-col gap-1">
-          {opts.map((opt, oi) => (
-            <label key={oi} className="flex items-center gap-2">
-              <input type="radio" name={`${exId}-${qIndex}`} value={opt} checked={answers[exId] && answers[exId][qIndex] === opt} onChange={(e) => handleSingleInput(exId, qIndex, e.target.value)} />
-              <span>{opt}</span>
-            </label>
-          ))}
-        </div>
-      );
-    }
-
-    // options separated by ' / '
-    if (q.includes(' / ')) {
-      const opts = q.split(' / ').map(s => s.trim());
-      return (
-        <div key={qIndex} className="flex flex-col gap-1">
-          {opts.map((opt, oi) => (
+          {opts.map((opt: string, oi: number) => (
             <label key={oi} className="flex items-center gap-2">
               <input type="radio" name={`${exId}-${qIndex}`} value={opt} checked={answers[exId] && answers[exId][qIndex] === opt} onChange={(e) => handleSingleInput(exId, qIndex, e.target.value)} />
               <span>{opt}</span>
@@ -151,7 +147,7 @@ const PracticaOrtografiaPage: React.FC = () => {
     }
 
     // Special case SCZ-1: expects 5 answers (per spec)
-    if (q && q.length > 80 && q.includes('grasiosa')) {
+    if ((q as any).kind === 'correct' && text && text.length > 80 && text.includes('grasiosa')) {
       return (
         <div key={qIndex} className="grid grid-cols-1 gap-2">
           {[0,1,2,3,4].map(i => (
@@ -161,7 +157,7 @@ const PracticaOrtografiaPage: React.FC = () => {
       );
     }
 
-    // default: textarea (limit width to avoid inputs demasiado anchos)
+    // default: textarea
     return (
       <textarea key={qIndex} className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-2xl border rounded p-2" rows={3} value={(answers[exId] && (answers[exId][qIndex] as string)) || ''} onChange={(e) => handleSingleInput(exId, qIndex, e.target.value)} />
     );
@@ -169,13 +165,12 @@ const PracticaOrtografiaPage: React.FC = () => {
 
   const buildSubmissionForExercise = (exId: string, ex: any) => {
     const ans = answers[exId] || [];
-    // For blanks we convert arrays into joined strings
-    const normalized = ex.questions.map((q: string, qi: number) => {
-      if (q.includes('_')) {
-        const parts = q.split('_');
+    const normalized = ex.questions.map((q: Question, qi: number) => {
+      const text = (q as any).text || '';
+      if ((q as any).kind === 'fill' || text.includes('_')) {
+        const parts = text.split('_');
         const blanks = parts.length - 1;
         const filled = (ans[qi] && Array.isArray(ans[qi])) ? (ans[qi] as string[]) : Array(blanks).fill('');
-        // build completed word(s) by inserting filled letters between parts
         let built = '';
         for (let i=0;i<parts.length;i++){
           built += parts[i];
@@ -183,12 +178,12 @@ const PracticaOrtografiaPage: React.FC = () => {
         }
         return built;
       }
-      if (q.includes(' / ')) {
+      if ((q as any).kind === 'choose') {
         return ans[qi] || '';
       }
-      const bracketMatch = q.match(/\[(.*?)\]/);
+      const bracketMatch = text.match(/\[(.*?)\]/);
       if (bracketMatch) return ans[qi] || '';
-      if (q && q.length > 80 && q.includes('grasiosa')) {
+      if ((q as any).kind === 'correct' && text && text.length > 80 && text.includes('grasiosa')) {
         return ans[qi] || [];
       }
       return ans[qi] || '';
@@ -223,35 +218,30 @@ const PracticaOrtografiaPage: React.FC = () => {
   };
 
   const submitAll = async () => {
-    // construir un solo payload con todas las respuestas
-    const allAnswers: Record<string, any> = {};
-    exercises.forEach(ex => {
-      allAnswers[ex.id] = buildSubmissionForExercise(ex.id, ex);
-    });
+    // Enviar cada ejercicio individualmente para que el backend lo procese correctamente
     setSubmitting(prev => ({ ...prev, all: true }));
-    try {
-      const res = await apiService.correctExercise({ answer: JSON.stringify({ exercise: 'all', answers: allAnswers }), module: 'ortografia', exerciseContext: 'all' });
-      setLastSubmission({ exercise: 'all', answers: allAnswers });
-      const response = res.response || res;
-      // si viene breakdown por ejercicio lo guardamos en results
-      if (response.byExercise) {
-        setResults(prev => ({ ...prev, ...response.byExercise }));
-      } else if (response.perExercise) {
-        setResults(prev => ({ ...prev, ...response.perExercise }));
+    const aggregatedResults: Record<string, any> = {};
+    let anyIncorrectOverall = false;
+    for (const ex of exercises) {
+      try {
+        const payload = { exercise: ex.id, answers: buildSubmissionForExercise(ex.id, ex) };
+        const res = await apiService.correctExercise({ answer: JSON.stringify(payload), module: 'ortografia', exerciseContext: ex.id });
+        const response = res.response || res;
+        aggregatedResults[ex.id] = response;
+        // detectar si hay incorrectas en este ejercicio
+        if (findAnyIncorrect(response)) anyIncorrectOverall = true;
+      } catch (err) {
+        aggregatedResults[ex.id] = { error: String(err) };
       }
-      // abrir modal explicativo si hay errores
-      const anyIncorrect = findAnyIncorrect(response);
-      if (anyIncorrect) {
-        const explanation = response.explanation || response.text || response.message || response.analysis || response.feedback || response;
-        const asText = typeof explanation === 'string' ? explanation : JSON.stringify(explanation, null, 2);
-        setModalContent({ title: `Explicación: Corrección completa`, body: sanitizeText(asText), exId: 'all' });
-        setModalOpen(true);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSubmitting(prev => ({ ...prev, all: false }));
     }
+    // actualizar estado
+    setResults(prev => ({ ...prev, ...aggregatedResults }));
+    setLastSubmission({ exercise: 'all', answers: exercises.reduce((acc: any, ex: any) => ({ ...acc, [ex.id]: buildSubmissionForExercise(ex.id, ex) }), {}) });
+    if (anyIncorrectOverall) {
+      setModalContent({ title: `Explicación: Corrección completa`, body: 'Hay respuestas incorrectas. Revisa los resultados por ejercicio.', exId: 'all' });
+      setModalOpen(true);
+    }
+    setSubmitting(prev => ({ ...prev, all: false }));
   };
 
   const closeModal = () => { setModalOpen(false); setModalContent(null); };
@@ -329,15 +319,16 @@ const PracticaOrtografiaPage: React.FC = () => {
             </div>
 
             <div className="mt-4 space-y-3">
-              {ex.questions.map((q: string, qi: number) => {
-                const isInline = q.includes('_');
-                const bracketMatch = q.match(/\[(.*?)\]/);
-                const wordCount = q.trim().split(/\s+/).filter(Boolean).length;
+              {ex.questions.map((q: Question, qi: number) => {
+                const text = (q as any).text || '';
+                const isInline = (q as any).kind === 'fill' || text.includes('_');
+                const bracketMatch = text.match(/\[(.*?)\]/);
+                const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
                 const showQuestionText = !isInline && (Boolean(bracketMatch) || wordCount > 1);
                 return (
                   <div key={qi} className="p-2 bg-gray-50 rounded">
                     {showQuestionText && (
-                      <div className="mb-2 text-base text-gray-700">{q}</div>
+                      <div className="mb-2 text-base text-gray-700">{text}</div>
                     )}
                     <div>
                       {renderQuestion(ex.id, q, qi)}

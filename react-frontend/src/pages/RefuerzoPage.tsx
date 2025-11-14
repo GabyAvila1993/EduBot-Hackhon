@@ -52,8 +52,8 @@ const RefuerzoPage: React.FC = () => {
                         Error de tipo: Cálculo.
                       </p>
                     </div>
-                    <div className="flex flex-col gap-2 w-full sm:w-auto">
-                      <button onClick={() => navigate('/practica-matematica')} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
+                      <div className="flex flex-col gap-2 w-full sm:w-auto">
+                        <button onClick={() => navigate('/practica-matematica', { state: { source: 'matematica' } })} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
                         <span className="truncate">Practicar este tema</span>
                       </button>
                     </div>
@@ -74,7 +74,7 @@ const RefuerzoPage: React.FC = () => {
                         <p className="text-[#616f89] dark:text-gray-400 text-base font-normal leading-normal">Error de tipo: Ortográfico (B/V).</p>
                       </div>
                       <div className="flex flex-col gap-2 w-full sm:w-auto">
-                        <button onClick={() => navigate('/practica-ortografia')} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
+                        <button onClick={() => navigate('/practica-ortografia', { state: { source: 'ortografiaExtras' } })} className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium leading-normal w-full sm:w-auto">
                           <span className="truncate">Practicar este tema</span>
                         </button>
                       </div>

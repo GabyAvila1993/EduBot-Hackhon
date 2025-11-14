@@ -1,4 +1,5 @@
 import React from 'react';
+import avatarProfesor from '../images/avatarProfesor.png';
 
 const ProfesorPage: React.FC = () => {
     return (
@@ -21,7 +22,7 @@ const ProfesorPage: React.FC = () => {
                         </span>
                     </button>
                     <div className="flex items-center gap-3">
-                        <div className="avatar-profesor aspect-square h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat"></div>
+                        <img src={avatarProfesor} alt="Profesor García" className="avatar-profesor aspect-square h-10 w-10 rounded-full bg-cover bg-center bg-no-repeat object-cover" />
                         <div className="flex flex-col text-sm">
                             <h2 className="font-medium text-[#111318] dark:text-white">Profesor García</h2>
                             <p className="text-[#616f89] dark:text-slate-400">Admin</p>

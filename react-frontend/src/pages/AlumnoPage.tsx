@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import avatarEstudiante from '../images/avatarEstudiante.png';
 
 const AlumnoPage: React.FC = () => {
   return (
@@ -14,11 +15,11 @@ const AlumnoPage: React.FC = () => {
             </div>
             <h2 className="text-xl font-bold leading-tight tracking-[-0.015em]">LearnSphere</h2>
           </div>
-          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
             <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-background-light-learnsphere dark:bg-background-dark text-neutral-dark dark:text-neutral-white hover:bg-neutral-gray-light/60 dark:hover:bg-neutral-gray-dark/30">
               <span className="material-symbols-outlined">notifications</span>
             </button>
-            <div className="avatar-img bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Avatar de Alex"></div>
+            <img src={avatarEstudiante} alt="Alex" className="avatar-img bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 object-cover" />
           </div>
         </header>
 
