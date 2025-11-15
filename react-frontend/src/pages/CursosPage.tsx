@@ -54,7 +54,7 @@ const CursosPage: React.FC = () => {
             <p className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">
               Explora tus Materias
             </p>
-            <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Primaria</p>
+            <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Secundaria</p>
           </div>
           <div className="w-full md:w-auto md:max-w-xs">
             <label className="flex flex-col min-w-40 h-12 w-full">

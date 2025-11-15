@@ -1,0 +1,114 @@
+[
+  {
+    "id": "s1",
+    "name": "Ana Martínez",
+    "class": "Matemáticas 8A",
+    "progress": 87,
+    "errorPatterns": [
+      { "topic": "Ecuaciones de segundo grado", "severity": "high" },
+      { "topic": "Sistemas de ecuaciones", "severity": "medium" }
+    ],
+    "lastActivity": "2024-10-28T09:15:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Ana+Martinez&background=E6F4EA&color=2F855A"
+  },
+  {
+    "id": "s2",
+    "name": "Carlos Rodríguez",
+    "class": "Matemáticas 8A",
+    "progress": 75,
+    "errorPatterns": [
+      { "topic": "Fracciones complejas", "severity": "medium" },
+      { "topic": "Operaciones combinadas", "severity": "low" }
+    ],
+    "lastActivity": "2024-10-27T14:40:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Carlos+Rodriguez&background=FFF7ED&color=DD6B20"
+  },
+  {
+    "id": "s3",
+    "name": "Lucía Gómez",
+    "class": "Matemáticas 8A",
+    "progress": 58,
+    "errorPatterns": [
+      { "topic": "Fracciones complejas", "severity": "high" },
+      { "topic": "Ecuaciones de primer grado", "severity": "medium" }
+    ],
+    "lastActivity": "2024-10-26T11:05:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Lucia+Gomez&background=FFF1F2&color=C53030"
+  },
+  {
+    "id": "s4",
+    "name": "Javier Torres",
+    "class": "Matemáticas 8A",
+    "progress": 68,
+    "errorPatterns": [
+      { "topic": "Decimales y porcentajes", "severity": "medium" },
+      { "topic": "Ecuaciones de segundo grado", "severity": "low" }
+    ],
+    "lastActivity": "2024-10-25T16:20:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Javier+Torres&background=EBF8FF&color=2B6CB0"
+  }
+  ,
+  {
+    "id": "s5",
+    "name": "María López",
+    "class": "Matemáticas 8A",
+    "progress": 98,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-01T10:00:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Maria+Lopez&background=E6F4EA&color=276749"
+  },
+  {
+    "id": "s6",
+    "name": "Diego Fernández",
+    "class": "Matemáticas 8A",
+    "progress": 99,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-02T12:15:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Diego+Fernandez&background=EBF8FF&color=2B6CB0"
+  },
+  {
+    "id": "s7",
+    "name": "Sofía Ramírez",
+    "class": "Matemáticas 8A",
+    "progress": 100,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-03T09:30:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Sofia+Ramirez&background=FFF7ED&color=DD6B20"
+  },
+  {
+    "id": "s8",
+    "name": "Martín Gómez",
+    "class": "Matemáticas 8A",
+    "progress": 97,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-04T14:00:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Martin+Gomez&background=FFF1F2&color=C53030"
+  },
+  {
+    "id": "s9",
+    "name": "Valentina Ruiz",
+    "class": "Matemáticas 8A",
+    "progress": 97,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-05T08:45:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Valentina+Ruiz&background=E6F4EA&color=276749"
+  },
+  {
+    "id": "s10",
+    "name": "Luis Herrera",
+    "class": "Matemáticas 8A",
+    "progress": 99,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-05T11:20:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Luis+Herrera&background=EBF8FF&color=2B6CB0"
+  },
+  {
+    "id": "s11",
+    "name": "Alejandra Silva",
+    "class": "Matemáticas 8A",
+    "progress": 100,
+    "errorPatterns": [],
+    "lastActivity": "2024-11-06T13:50:00Z",
+    "avatar": "https://ui-avatars.com/api/?name=Alejandra+Silva&background=FFF7ED&color=DD6B20"
+  }
+]

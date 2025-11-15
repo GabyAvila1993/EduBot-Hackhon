@@ -73,7 +73,7 @@
 
 /* Placeholder para imágenes de tarjetas (fondo más claro) */
 .card-img-algebra,
-.card-img-biologia {
+.card-img-ortografia {
     background-color: #f0f0f0; /* Color de placeholder */
     border: 2px dashed #cccccc; /* Borde de placeholder */
     background-image: none !important; /* Asegura que no haya imagen */

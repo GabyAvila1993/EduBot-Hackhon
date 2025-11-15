@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import ProfesorPage from './pages/ProfesorPage';
 import AlumnoPage from './pages/AlumnoPage';
+import SelectionRole from './pages/SelectionRole';
+import PerfilDocentePage from './pages/PerfilDocentePage';
 import CursosPage from './pages/CursosPage';
 import RefuerzoPage from './pages/RefuerzoPage';
 import PerfilPage from './pages/PerfilPage';
@@ -20,6 +22,7 @@ import PracticaMatematicaPage from './pages/PracticaMatematicaPage';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [role, setRole] = useState<'profesor' | 'alumno' | null>(null);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -29,12 +32,18 @@ function App() {
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className={`${darkMode ? 'dark' : ''} bg-background-light dark:bg-background-dark font-display text-[#111318] dark:text-white`}>
         <div className="relative flex h-auto min-h-screen w-full flex-row">
-          <Sidebar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-          
+          {
+            // Mostrar Sidebar solo cuando se ha seleccionado un rol (docente o alumno)
+            role !== null && (
+              <Sidebar role={role} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+            )
+          }
+
           <main className="flex-1 overflow-y-auto">
             <Routes>
-              <Route path="/" element={<ProfesorPage />} />
+              <Route path="/" element={<SelectionRole setRole={setRole} />} />
               <Route path="/profesor" element={<ProfesorPage />} />
+              <Route path="/profesor/perfil-docente" element={<PerfilDocentePage />} />
               <Route path="/alumno" element={<AlumnoPage />} />
               <Route path="/cursos" element={<CursosPage />} />
               <Route path="/refuerzo" element={<RefuerzoPage />} />
