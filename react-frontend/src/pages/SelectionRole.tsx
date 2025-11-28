@@ -28,7 +28,7 @@ const SelectionRole: React.FC<SelectionRoleProps> = ({ setRole }) => {
                 <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
               </svg>
             </div>
-            <h2 className="text-lg font-bold">EducaApp</h2>
+            <h2 className="text-lg font-bold">EduBot</h2>
           </div>
         </header>
 
